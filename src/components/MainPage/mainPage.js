@@ -11,38 +11,25 @@ import {
   ShoppingOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import f2myazı from "../../images/f2myazı.png";
-import "./MainPage.css"; // CSS dosyasını ekledik
+import "./MainPage.css";
 import CategoryCarousel from "./categoryCarousel";
 import ProductGrid from "./productGrid";
 import FooterComponent from "../footer";
+import { useUser } from "../Context/UserContext"; // Adjust this import if necessary
 
 function MainPage() {
   const navigate = useNavigate();
+  const { user, setUser } = useUser();
 
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [userDrawerVisible, setUserDrawerVisible] = useState(false);
 
-  // Menü drawer açma
-  const showDrawer = () => {
-    setDrawerVisible(true);
-  };
-
-  // Menü drawer kapatma
-  const onClose = () => {
-    setDrawerVisible(false);
-  };
-
-  // User Drawer açma
-  const showUserDrawer = () => {
-    setUserDrawerVisible(true);
-  };
-
-  // User Drawer kapatma
-  const onUserDrawerClose = () => {
-    setUserDrawerVisible(false);
-  };
+  const showDrawer = () => setDrawerVisible(true);
+  const onClose = () => setDrawerVisible(false);
+  const showUserDrawer = () => setUserDrawerVisible(true);
+  const onUserDrawerClose = () => setUserDrawerVisible(false);
 
   // Kategori Listesi
   const categories = [
@@ -56,8 +43,8 @@ function MainPage() {
 
   const userOptions = [
     {
-      label: "Profilim",
-      action: () => navigate("/login"),
+      label: user ? user.userName : "Giriş Yap",
+      action: () => navigate(user ? "/profile" : "/login"),
       icon: <UserOutlined />,
     },
     {
@@ -78,6 +65,10 @@ function MainPage() {
     },
     {
       label: "Çıkış Yap",
+      action: () => {
+        setUser(null);
+        onUserDrawerClose();
+      },
       icon: <LogoutOutlined />,
     },
   ];
