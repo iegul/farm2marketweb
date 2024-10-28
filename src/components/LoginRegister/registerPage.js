@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Row, Col, Input, Button, Typography, message } from "antd";
+import { Row, Col, Input, Button, Typography, message, Tabs } from "antd";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import TabPane from "antd/es/tabs/TabPane";
 
 const { Text } = Typography;
 
@@ -12,13 +13,15 @@ function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [adress, setAdress] = useState("");
+  const [marketName, setMarketName] = useState("");
+  const [companyType, setCompanyType] = useState("");
 
   // Basic validation
   const isValidForm = () => {
     return firstName && lastName && userName && email && password && adress;
   };
 
-  //Form Submit
+  //Çiftçi Form Submit
   const handleSubmit = async () => {
     if (!isValidForm()) {
       message.warning("Lütfen tüm alanları doldurun.");
@@ -28,7 +31,7 @@ function RegisterPage() {
     try {
       console.log("Kayıt isteği gönderiliyor...");
       const response = await axios.post(
-        "http://farmtwomarket.com/api/Auth/Register",
+        "https://farmtwomarket.com/api/Auth/FarmerRegister",
         {
           firstName,
           lastName,
@@ -36,6 +39,38 @@ function RegisterPage() {
           email,
           password,
           adress,
+        }
+      );
+      console.log("Kayıt işlemi başarılı:", response.data);
+      if (response.status === 200) {
+        message.success("Kayıt Başarılı!");
+      }
+    } catch (error) {
+      console.error("Kayıt İşlemi Başarısız: ", error);
+      message.error("Kayıt sırasında bir hata oluştu");
+    }
+  };
+
+  //Market Form Submit
+  const handleSubmit_2 = async () => {
+    if (!isValidForm()) {
+      message.warning("Lütfen tüm alanları doldurun.");
+      return;
+    }
+
+    try {
+      console.log("Kayıt isteği gönderiliyor...");
+      const response = await axios.post(
+        "https://farmtwomarket.com/api/Auth/MarketRegister",
+        {
+          firstName,
+          lastName,
+          userName,
+          email,
+          password,
+          adress,
+          marketName,
+          companyType,
         }
       );
       console.log("Kayıt işlemi başarılı:", response.data);
@@ -72,7 +107,7 @@ function RegisterPage() {
       >
         {/* Hesabım Butonu */}
         <Col span={24} style={{ textAlign: "left", paddingBottom: "20px" }}>
-          <Link to="/account">
+          <Link to="/mainPage">
             <Button
               type="link"
               style={{
@@ -88,139 +123,311 @@ function RegisterPage() {
         </Col>
 
         {/* Form Alanı */}
-        <Col span={24}>
-          <Input
-            placeholder="Adınız"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            style={{
-              marginBottom: "15px",
-              borderRadius: "5px",
-              padding: "10px",
-              borderColor: "#7E8957",
-              transition: "border-color 0.3s ease",
-            }}
-            onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
-            onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
-          />
-          <Input
-            placeholder="Soyadınız"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            style={{
-              marginBottom: "15px",
-              borderRadius: "5px",
-              padding: "10px",
-              borderColor: "#7E8957",
-              transition: "border-color 0.3s ease",
-            }}
-            onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
-            onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
-          />
-          <Input
-            placeholder="Kullanıcı Adı"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            style={{
-              marginBottom: "15px",
-              borderRadius: "5px",
-              padding: "10px",
-              borderColor: "#7E8957",
-              transition: "border-color 0.3s ease",
-            }}
-            onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
-            onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
-          />
-          <Input
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={{
-              marginBottom: "15px",
-              borderRadius: "5px",
-              padding: "10px",
-              borderColor: "#7E8957",
-              transition: "border-color 0.3s ease",
-            }}
-            onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
-            onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
-          />
-          <Input
-            placeholder="Adres"
-            value={adress}
-            onChange={(e) => setAdress(e.target.value)}
-            style={{
-              marginBottom: "15px",
-              borderRadius: "5px",
-              padding: "10px",
-              borderColor: "#7E8957",
-              transition: "border-color 0.3s ease",
-            }}
-            onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
-            onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
-          />
-          <Input.Password
-            placeholder="Şifre"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{
-              marginBottom: "15px",
-              borderRadius: "5px",
-              padding: "10px",
-              borderColor: "#7E8957",
-              transition: "border-color 0.3s ease",
-            }}
-            onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
-            onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
-          />
+        <Tabs defaultActiveKey="1" centered>
+          <TabPane tab="Çiftçi KAyıt " key="1">
+            <Col span={24}>
+              <Input
+                placeholder="Adınız"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                style={{
+                  marginBottom: "15px",
+                  borderRadius: "5px",
+                  padding: "10px",
+                  borderColor: "#7E8957",
+                  transition: "border-color 0.3s ease",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
+                onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
+              />
+              <Input
+                placeholder="Soyadınız"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                style={{
+                  marginBottom: "15px",
+                  borderRadius: "5px",
+                  padding: "10px",
+                  borderColor: "#7E8957",
+                  transition: "border-color 0.3s ease",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
+                onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
+              />
+              <Input
+                placeholder="Kullanıcı Adı"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                style={{
+                  marginBottom: "15px",
+                  borderRadius: "5px",
+                  padding: "10px",
+                  borderColor: "#7E8957",
+                  transition: "border-color 0.3s ease",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
+                onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
+              />
+              <Input
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={{
+                  marginBottom: "15px",
+                  borderRadius: "5px",
+                  padding: "10px",
+                  borderColor: "#7E8957",
+                  transition: "border-color 0.3s ease",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
+                onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
+              />
+              <Input
+                placeholder="Adres"
+                value={adress}
+                onChange={(e) => setAdress(e.target.value)}
+                style={{
+                  marginBottom: "15px",
+                  borderRadius: "5px",
+                  padding: "10px",
+                  borderColor: "#7E8957",
+                  transition: "border-color 0.3s ease",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
+                onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
+              />
+              <Input.Password
+                placeholder="Şifre"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{
+                  marginBottom: "15px",
+                  borderRadius: "5px",
+                  padding: "10px",
+                  borderColor: "#7E8957",
+                  transition: "border-color 0.3s ease",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
+                onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
+              />
 
-          {/* Kayıt Ol ve Google ile Kayıt Ol Butonları */}
-          <Button
-            type="primary"
-            block
-            style={{
-              backgroundColor: "#7E8957",
-              borderColor: "#7E8957",
-              marginBottom: "15px",
-              borderRadius: "5px",
-              padding: "10px",
-              transition: "background-color 0.3s ease",
-            }}
-            onClick={handleSubmit}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = "#98a77a";
-              e.target.style.borderColor = "#98a77a";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = "#7E8957";
-              e.target.style.borderColor = "#7E8957";
-            }}
-          >
-            Kayıt Ol
-          </Button>
+              {/* Kayıt Ol ve Google ile Kayıt Ol Butonları */}
+              <Link to="/login">
+                <Button
+                  type="primary"
+                  block
+                  style={{
+                    backgroundColor: "#7E8957",
+                    borderColor: "#7E8957",
+                    marginBottom: "15px",
+                    borderRadius: "5px",
+                    padding: "10px",
+                    transition: "background-color 0.3s ease",
+                  }}
+                  onClick={handleSubmit}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = "#98a77a";
+                    e.target.style.borderColor = "#98a77a";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = "#7E8957";
+                    e.target.style.borderColor = "#7E8957";
+                  }}
+                >
+                  Kayıt Ol
+                </Button>
+              </Link>
 
-          <Button
-            block
-            icon={<i className="fab fa-google"></i>}
-            style={{
-              borderColor: "#7E8957",
-              color: "#7E8957",
-              borderRadius: "5px",
-              padding: "10px",
-              transition: "border-color 0.3s ease, color 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.borderColor = "#98a77a";
-              e.target.style.color = "#98a77a";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.borderColor = "#7E8957";
-              e.target.style.color = "#7E8957";
-            }}
-          >
-            Google ile Kayıt Ol
-          </Button>
-        </Col>
+              <Button
+                block
+                icon={<i className="fab fa-google"></i>}
+                style={{
+                  borderColor: "#7E8957",
+                  color: "#7E8957",
+                  borderRadius: "5px",
+                  padding: "10px",
+                  transition: "border-color 0.3s ease, color 0.3s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.borderColor = "#98a77a";
+                  e.target.style.color = "#98a77a";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.borderColor = "#7E8957";
+                  e.target.style.color = "#7E8957";
+                }}
+              >
+                Google ile Kayıt Ol
+              </Button>
+            </Col>
+          </TabPane>
+
+          <TabPane tab="Market Kayıt " key="2">
+            <Col span={24}>
+              <Input
+                placeholder="Adınız"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                style={{
+                  marginBottom: "15px",
+                  borderRadius: "5px",
+                  padding: "10px",
+                  borderColor: "#7E8957",
+                  transition: "border-color 0.3s ease",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
+                onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
+              />
+              <Input
+                placeholder="Soyadınız"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                style={{
+                  marginBottom: "15px",
+                  borderRadius: "5px",
+                  padding: "10px",
+                  borderColor: "#7E8957",
+                  transition: "border-color 0.3s ease",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
+                onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
+              />
+              <Input
+                placeholder="Kullanıcı Adı"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                style={{
+                  marginBottom: "15px",
+                  borderRadius: "5px",
+                  padding: "10px",
+                  borderColor: "#7E8957",
+                  transition: "border-color 0.3s ease",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
+                onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
+              />
+              <Input
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={{
+                  marginBottom: "15px",
+                  borderRadius: "5px",
+                  padding: "10px",
+                  borderColor: "#7E8957",
+                  transition: "border-color 0.3s ease",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
+                onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
+              />
+              <Input
+                placeholder="Adres"
+                value={adress}
+                onChange={(e) => setAdress(e.target.value)}
+                style={{
+                  marginBottom: "15px",
+                  borderRadius: "5px",
+                  padding: "10px",
+                  borderColor: "#7E8957",
+                  transition: "border-color 0.3s ease",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
+                onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
+              />
+              <Input
+                placeholder="MarketName"
+                value={marketName}
+                onChange={(e) => setMarketName(e.target.value)}
+                style={{
+                  marginBottom: "15px",
+                  borderRadius: "5px",
+                  padding: "10px",
+                  borderColor: "#7E8957",
+                  transition: "border-color 0.3s ease",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
+                onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
+              />
+              <Input
+                placeholder="CompanyType"
+                value={companyType}
+                onChange={(e) => setCompanyType(e.target.value)}
+                style={{
+                  marginBottom: "15px",
+                  borderRadius: "5px",
+                  padding: "10px",
+                  borderColor: "#7E8957",
+                  transition: "border-color 0.3s ease",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
+                onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
+              />
+              <Input.Password
+                placeholder="Şifre"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{
+                  marginBottom: "15px",
+                  borderRadius: "5px",
+                  padding: "10px",
+                  borderColor: "#7E8957",
+                  transition: "border-color 0.3s ease",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
+                onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
+              />
+
+              {/* Kayıt Ol ve Google ile Kayıt Ol Butonları */}
+              <Link to="/login">
+                <Button
+                  type="primary"
+                  block
+                  style={{
+                    backgroundColor: "#7E8957",
+                    borderColor: "#7E8957",
+                    marginBottom: "15px",
+                    borderRadius: "5px",
+                    padding: "10px",
+                    transition: "background-color 0.3s ease",
+                  }}
+                  onClick={handleSubmit_2}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = "#98a77a";
+                    e.target.style.borderColor = "#98a77a";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = "#7E8957";
+                    e.target.style.borderColor = "#7E8957";
+                  }}
+                >
+                  Kayıt Ol
+                </Button>
+              </Link>
+
+              <Button
+                block
+                icon={<i className="fab fa-google"></i>}
+                style={{
+                  borderColor: "#7E8957",
+                  color: "#7E8957",
+                  borderRadius: "5px",
+                  padding: "10px",
+                  transition: "border-color 0.3s ease, color 0.3s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.borderColor = "#98a77a";
+                  e.target.style.color = "#98a77a";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.borderColor = "#7E8957";
+                  e.target.style.color = "#7E8957";
+                }}
+              >
+                Google ile Kayıt Ol
+              </Button>
+            </Col>
+          </TabPane>
+        </Tabs>
       </Row>
     </div>
   );

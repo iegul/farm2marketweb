@@ -1,11 +1,51 @@
-import React from "react";
-import { Row, Col, Input, Button, Typography } from "antd";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Row, Col, Input, Button, Typography, message } from "antd"; // message eklendi
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios"; // axios eklendi
 import f2mImage from "../../images/f2m-Photoroom.png";
+import { useUser } from "../Context/UserContext";
 
 const { Text } = Typography;
 
 function LoginPage() {
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const { setUser } = useUser();
+
+  // Basic validation
+  const isValidForm = () => {
+    return userName && password; // Tanımlanmamış alanlar kaldırıldı
+  };
+
+  // Form Submit
+  const handleSubmit = async () => {
+    if (!isValidForm()) {
+      message.warning("Lütfen tüm alanları doldurun.");
+      return;
+    }
+
+    try {
+      console.log("Kayıt isteği gönderiliyor...");
+      const response = await axios.post(
+        "https://farmtwomarket.com/api/Auth/Login",
+        {
+          userName,
+          password,
+        }
+      );
+      console.log("Kayıt işlemi başarılı:", response.data);
+      if (response.status === 200) {
+        message.success("Kayıt Başarılı!");
+        setUser({ userName });
+        navigate("/mainPage");
+      }
+    } catch (error) {
+      console.error("Kayıt İşlemi Başarısız: ", error);
+      message.error("Kayıt sırasında bir hata oluştu");
+    }
+  };
+
   return (
     <div
       style={{
@@ -37,7 +77,6 @@ function LoginPage() {
               color: "#7E8957",
               transition: "color 0.3s ease",
             }}
-            // Hover Stili
             onMouseEnter={(e) => (e.target.style.color = "#98a77a")}
             onMouseLeave={(e) => (e.target.style.color = "#7E8957")}
           >
@@ -67,27 +106,31 @@ function LoginPage() {
         {/* Form Alanı */}
         <Col span={24}>
           <Input
-            placeholder="Email"
+            placeholder="Kullanıcı Adı"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
             style={{
               marginBottom: "15px",
               borderRadius: "5px",
               padding: "10px",
-              borderColor: "#7E8957", // Varsayılan sınır rengi
+              borderColor: "#7E8957",
               transition: "border-color 0.3s ease",
             }}
-            onFocus={(e) => (e.target.style.borderColor = "#7E8957")} // Focus olduğunda sınır rengi yeşil olsun
+            onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
             onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
           />
           <Input.Password
             placeholder="Şifre"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             style={{
               marginBottom: "15px",
               borderRadius: "5px",
               padding: "10px",
-              borderColor: "#7E8957", // Varsayılan sınır rengi
+              borderColor: "#7E8957",
               transition: "border-color 0.3s ease",
             }}
-            onFocus={(e) => (e.target.style.borderColor = "#7E8957")} // Focus olduğunda sınır rengi yeşil olsun
+            onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
             onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
           />
           <Button
@@ -100,13 +143,13 @@ function LoginPage() {
               borderRadius: "5px",
               transition: "background-color 0.3s ease",
             }}
-            // Hover Stili
+            onClick={handleSubmit}
             onMouseEnter={(e) => {
-              e.target.style.backgroundColor = "#98a77a"; // Daha açık renk
+              e.target.style.backgroundColor = "#98a77a";
               e.target.style.borderColor = "#98a77a";
             }}
             onMouseLeave={(e) => {
-              e.target.style.backgroundColor = "#7E8957"; // Eski renk
+              e.target.style.backgroundColor = "#7E8957";
               e.target.style.borderColor = "#7E8957";
             }}
           >
@@ -117,7 +160,6 @@ function LoginPage() {
             <Link
               to="/register"
               style={{ color: "#7E8957", transition: "color 0.3s ease" }}
-              // Hover Stili
               onMouseEnter={(e) => (e.target.style.color = "#98a77a")}
               onMouseLeave={(e) => (e.target.style.color = "#7E8957")}
             >
@@ -133,13 +175,12 @@ function LoginPage() {
               borderRadius: "5px",
               transition: "border-color 0.3s ease, color 0.3s ease",
             }}
-            // Hover Stili
             onMouseEnter={(e) => {
-              e.target.style.borderColor = "#98a77a"; // Daha açık renk
+              e.target.style.borderColor = "#98a77a";
               e.target.style.color = "#98a77a";
             }}
             onMouseLeave={(e) => {
-              e.target.style.borderColor = "#7E8957"; // Eski renk
+              e.target.style.borderColor = "#7E8957";
               e.target.style.color = "#7E8957";
             }}
           >
