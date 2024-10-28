@@ -5,14 +5,23 @@ import { Row, Col } from "antd";
 
 function LogoPage() {
   const navigate = useNavigate();
+
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate("/mainPage");
     }, 3000);
     return () => clearTimeout(timer);
   }, [navigate]);
+
   return (
-    <div>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <style>
         {`
           @keyframes spin {
@@ -21,18 +30,14 @@ function LogoPage() {
           }
         `}
       </style>
-      <Row align="middle" justify="center" style={{ minHeight: "100vh" }}>
-        <Col>
-          <img
-            src={f2mImage}
-            alt="Logo"
-            style={{
-              maxWidth: "60%",
-              animation: "spin 4s linear infinite",
-            }}
-          />
-        </Col>
-      </Row>
+      <img
+        src={f2mImage}
+        alt="Logo"
+        style={{
+          maxWidth: "60%",
+          animation: "spin 4s linear infinite",
+        }}
+      />
     </div>
   );
 }
