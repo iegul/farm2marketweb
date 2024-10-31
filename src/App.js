@@ -6,7 +6,11 @@ import { UserProvider } from "./components/Context/UserContext";
 
 function App() {
   return (
+<<<<<<< HEAD
     <UserProvider className="App">
+=======
+    <UserProvider>
+>>>>>>> d292096cccdb58142f4bfd499bdfca9b68b3bc6c
       <Router>
         <div>
           <AppRouter />
