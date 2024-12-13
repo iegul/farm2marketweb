@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import f2mImage from "../images/f2m-Photoroom.png";
-import { Row, Col } from "antd";
 
 function LogoPage() {
   const navigate = useNavigate();
@@ -20,6 +19,8 @@ function LogoPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        overflow: "hidden",
+        padding: "1rem", // kenarlardan biraz boşluk bırakır
       }}
     >
       <style>
@@ -34,7 +35,8 @@ function LogoPage() {
         src={f2mImage}
         alt="Logo"
         style={{
-          maxWidth: "60%",
+          maxWidth: "80%", // daha küçük hale getirilmiş
+          maxHeight: "80vh", // dikey olarak ekran boyutuna uygun
           animation: "spin 4s linear infinite",
         }}
       />

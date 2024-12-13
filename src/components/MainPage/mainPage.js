@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input, Row, Col, Button, Drawer, List } from "antd";
+import { Input, Row, Col, Button, Drawer, List, Modal } from "antd";
 import {
   MenuOutlined,
   ShoppingCartOutlined,
@@ -15,9 +15,10 @@ import { useNavigate } from "react-router-dom";
 import f2myazı from "../../images/f2myazı.png";
 import "./MainPage.css";
 import CategoryCarousel from "./categoryCarousel";
-import ProductGrid from "./productGrid";
+import ProductGrid from "./ProductAdd/productGrid";
 import FooterComponent from "../footer";
-import { useUser } from "../Context/UserContext"; // Adjust this import if necessary
+import { useUser } from "../Context/UserContext";
+import UrunEkleForm from "./ProductAdd/productAdd";
 
 function MainPage() {
   const navigate = useNavigate();
@@ -25,11 +26,16 @@ function MainPage() {
 
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [userDrawerVisible, setUserDrawerVisible] = useState(false);
+  const [urunEkleVisible, setUrunEkleVisible] = useState(false); //
 
   const showDrawer = () => setDrawerVisible(true);
   const onClose = () => setDrawerVisible(false);
   const showUserDrawer = () => setUserDrawerVisible(true);
   const onUserDrawerClose = () => setUserDrawerVisible(false);
+
+  //Ürün Ekleme
+  const showUrunEkle = () => setUrunEkleVisible(true);
+  const onUrunEkleClose = () => setUrunEkleVisible(false);
 
   // Kategori Listesi
   const categories = [
@@ -41,37 +47,59 @@ function MainPage() {
     "Süt Ürünleri",
   ];
 
-  const userOptions = [
+  let userOptions = [
     {
       label: user ? user.userName : "Giriş Yap",
       action: () => navigate(user ? "/profile" : "/login"),
       icon: <UserOutlined />,
     },
-    {
-      label: "Aldıklarım",
-      icon: <DollarOutlined />,
-    },
-    {
-      label: "Sattıklarım",
-      icon: <TagOutlined />,
-    },
-    {
-      label: "Ürünlerim",
-      icon: <ShoppingOutlined />,
-    },
-    {
-      label: "Farm2Market Müşteri Hizmetleri",
-      icon: <InfoCircleOutlined />,
-    },
-    {
-      label: "Çıkış Yap",
-      action: () => {
-        setUser(null);
-        onUserDrawerClose();
-      },
-      icon: <LogoutOutlined />,
-    },
   ];
+
+  if (user) {
+    if (user.userRole === "Farmer") {
+      userOptions = [
+        ...userOptions,
+        {
+          label: "Ürün Ekle",
+          icon: <TagOutlined />,
+          action: showUrunEkle,
+        },
+        {
+          label: "Satışlarım",
+          icon: <TagOutlined />,
+        },
+      ];
+    } else if (user.userRole === "MarketReceiver") {
+      userOptions = [
+        ...userOptions,
+        {
+          label: "Alışlarım",
+          icon: <DollarOutlined />,
+        },
+        {
+          label: "Ürünlerim",
+          icon: <ShoppingOutlined />,
+        },
+      ];
+    }
+  } else {
+    userOptions = [
+      ...userOptions,
+      {
+        label: "Farm2Market Müşteri Hizmetleri",
+        icon: <InfoCircleOutlined />,
+      },
+    ];
+  }
+
+  userOptions.push({
+    label: "Çıkış Yap",
+    action: () => {
+      setUser(null);
+      onUserDrawerClose();
+    },
+    icon: <LogoutOutlined />,
+  });
 
   return (
     <div className="main-page-container">
@@ -88,8 +116,16 @@ function MainPage() {
 
         {/* Sağdaki İkonlar */}
         <Col>
-          <Button type="text" icon={<ShoppingCartOutlined />} />
-          <Button type="text" icon={<HeartOutlined />} />
+          <Button
+            type="text"
+            icon={<ShoppingCartOutlined />}
+            onClick={() => navigate("/page-sepet")}
+          />
+          <Button
+            type="text"
+            icon={<HeartOutlined />}
+            onClick={() => navigate("/page-favori")}
+          />
           <Button
             type="text"
             icon={<UserOutlined />}
@@ -152,6 +188,14 @@ function MainPage() {
           )}
         />
       </Drawer>
+      <Modal
+        title="Ürün Ekle"
+        visible={urunEkleVisible}
+        onCancel={onUrunEkleClose}
+        footer={null}
+      >
+        <UrunEkleForm />
+      </Modal>
     </div>
   );
 }

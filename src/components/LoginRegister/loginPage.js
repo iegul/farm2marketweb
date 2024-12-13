@@ -1,48 +1,62 @@
 import React, { useState } from "react";
-import { Row, Col, Input, Button, Typography, message } from "antd"; // message eklendi
+import { Row, Col, Input, Button, Typography, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios"; // axios eklendi
+import axios from "axios";
 import f2mImage from "../../images/f2m-Photoroom.png";
 import { useUser } from "../Context/UserContext";
 
 const { Text } = Typography;
 
 function LoginPage() {
-  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { setUser } = useUser();
 
-  // Basic validation
-  const isValidForm = () => {
-    return userName && password; // Tanımlanmamış alanlar kaldırıldı
-  };
+  const isValidForm = () => email && password;
 
-  // Form Submit
   const handleSubmit = async () => {
     if (!isValidForm()) {
       message.warning("Lütfen tüm alanları doldurun.");
       return;
     }
 
+    setIsLoading(true);
+
     try {
-      console.log("Kayıt isteği gönderiliyor...");
       const response = await axios.post(
         "https://farmtwomarket.com/api/Auth/Login",
+        { email, password },
         {
-          userName,
-          password,
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
-      console.log("Kayıt işlemi başarılı:", response.data);
-      if (response.status === 200) {
-        message.success("Kayıt Başarılı!");
-        setUser({ userName });
+
+      const { emailConfirmed, token, userId, userName, userRole } =
+        response.data.data;
+
+      const userData = { email, token, userId, userName, userRole };
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      // Kullanıcı e-posta doğrulama durumunu kontrol et
+      if (!emailConfirmed) {
+        message.info("E-posta doğrulamanız gerekmektedir.");
+        navigate("/confirm-mail");
+      } else {
+        message.success("Başarıyla giriş yaptınız!");
         navigate("/mainPage");
       }
     } catch (error) {
-      console.error("Kayıt İşlemi Başarısız: ", error);
-      message.error("Kayıt sırasında bir hata oluştu");
+      const errorMessage =
+        error.response?.data?.message || "Giriş sırasında bir hata oluştu.";
+      console.error("Giriş işlemi hatası:", error.response?.data || error);
+      message.error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -106,9 +120,9 @@ function LoginPage() {
         {/* Form Alanı */}
         <Col span={24}>
           <Input
-            placeholder="Kullanıcı Adı"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
+            placeholder="E-Posta"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             style={{
               marginBottom: "15px",
               borderRadius: "5px",
@@ -144,14 +158,6 @@ function LoginPage() {
               transition: "background-color 0.3s ease",
             }}
             onClick={handleSubmit}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = "#98a77a";
-              e.target.style.borderColor = "#98a77a";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = "#7E8957";
-              e.target.style.borderColor = "#7E8957";
-            }}
           >
             Giriş Yap
           </Button>
@@ -160,32 +166,10 @@ function LoginPage() {
             <Link
               to="/register"
               style={{ color: "#7E8957", transition: "color 0.3s ease" }}
-              onMouseEnter={(e) => (e.target.style.color = "#98a77a")}
-              onMouseLeave={(e) => (e.target.style.color = "#7E8957")}
             >
               Kayıt Ol
             </Link>
           </div>
-          <Button
-            block
-            icon={<i className="fab fa-google"></i>}
-            style={{
-              borderColor: "#7E8957",
-              color: "#7E8957",
-              borderRadius: "5px",
-              transition: "border-color 0.3s ease, color 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.borderColor = "#98a77a";
-              e.target.style.color = "#98a77a";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.borderColor = "#7E8957";
-              e.target.style.color = "#7E8957";
-            }}
-          >
-            Google ile Giriş Yap
-          </Button>
         </Col>
       </Row>
     </div>

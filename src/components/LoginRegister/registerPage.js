@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Row, Col, Input, Button, Typography, message, Tabs } from "antd";
+import { Row, Col, Input, Button, message, Tabs } from "antd";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import TabPane from "antd/es/tabs/TabPane";
-
-const { Text } = Typography;
+import { useNavigate } from "react-router-dom";
 
 function RegisterPage() {
+  const navigate = useNavigate();
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [userName, setUserName] = useState("");
@@ -16,14 +17,26 @@ function RegisterPage() {
   const [marketName, setMarketName] = useState("");
   const [companyType, setCompanyType] = useState("");
 
-  // Basic validation
-  const isValidForm = () => {
+  const isValidForm_1 = () => {
     return firstName && lastName && userName && email && password && adress;
+  };
+
+  const isValidForm_2 = () => {
+    return (
+      firstName &&
+      lastName &&
+      userName &&
+      email &&
+      password &&
+      adress &&
+      marketName &&
+      companyType
+    );
   };
 
   //Çiftçi Form Submit
   const handleSubmit = async () => {
-    if (!isValidForm()) {
+    if (!isValidForm_1()) {
       message.warning("Lütfen tüm alanları doldurun.");
       return;
     }
@@ -45,6 +58,7 @@ function RegisterPage() {
       if (response.status === 200) {
         message.success("Kayıt Başarılı!");
       }
+      navigate("/confirm-mail", { state: { email } });
     } catch (error) {
       console.error("Kayıt İşlemi Başarısız: ", error);
       message.error("Kayıt sırasında bir hata oluştu");
@@ -53,7 +67,7 @@ function RegisterPage() {
 
   //Market Form Submit
   const handleSubmit_2 = async () => {
-    if (!isValidForm()) {
+    if (!isValidForm_2()) {
       message.warning("Lütfen tüm alanları doldurun.");
       return;
     }
@@ -77,6 +91,7 @@ function RegisterPage() {
       if (response.status === 200) {
         message.success("Kayıt Başarılı!");
       }
+      navigate("/confirm-mail", { state: { email } });
     } catch (error) {
       console.error("Kayıt İşlemi Başarısız: ", error);
       message.error("Kayıt sırasında bir hata oluştu");
@@ -124,7 +139,7 @@ function RegisterPage() {
 
         {/* Form Alanı */}
         <Tabs defaultActiveKey="1" centered>
-          <TabPane tab="Çiftçi KAyıt " key="1">
+          <TabPane tab="Çiftçi Kayıt " key="1">
             <Col span={24}>
               <Input
                 placeholder="Adınız"
