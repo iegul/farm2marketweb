@@ -1,116 +1,133 @@
-import React, { useState } from "react";
-import { Row, Col, Card, Button, Pagination } from "antd";
+import React, { useState, useEffect } from "react";
+import { Row, Col, Card, Button, Pagination, Carousel, Input } from "antd";
 import { HeartOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-// Ürün verileri
-const data = [
-  {
-    title: "Domates",
-    price: "10$/kg",
-    tag: "#domates",
-    imageUrl: "https://picsum.photos/200/300",
-  },
-  {
-    title: "Salatalık",
-    price: "8$/kg",
-    tag: "#salatalık",
-    imageUrl: "https://picsum.photos/200/300",
-  },
-  {
-    title: "Biber",
-    price: "12$/kg",
-    tag: "#biber",
-    imageUrl: "https://picsum.photos/200/300",
-  },
-  {
-    title: "Patlıcan",
-    price: "14$/kg",
-    tag: "#patlıcan",
-    imageUrl: "https://picsum.photos/200/300",
-  },
-  {
-    title: "Kabak",
-    price: "9$/kg",
-    tag: "#kabak",
-    imageUrl: "https://picsum.photos/200/300",
-  },
-  {
-    title: "Marul",
-    price: "6$/kg",
-    tag: "#marul",
-    imageUrl: "https://picsum.photos/200/300",
-  },
-  {
-    title: "Havuç",
-    price: "7$/kg",
-    tag: "#havuç",
-    imageUrl: "https://picsum.photos/200/300",
-  },
-  {
-    title: "Patates",
-    price: "5$/kg",
-    tag: "#patates",
-    imageUrl: "https://picsum.photos/200/300",
-  },
-  {
-    title: "Domates",
-    price: "10$/kg",
-    tag: "#domates",
-    imageUrl: "https://picsum.photos/200/300",
-  },
-  {
-    title: "Salatalık",
-    price: "8$/kg",
-    tag: "#salatalık",
-    imageUrl: "https://picsum.photos/200/300",
-  },
-  {
-    title: "Biber",
-    price: "12$/kg",
-    tag: "#biber",
-    imageUrl: "https://picsum.photos/200/300",
-  },
-  {
-    title: "Patlıcan",
-    price: "14$/kg",
-    tag: "#patlıcan",
-    imageUrl: "https://picsum.photos/200/300",
-  },
-  {
-    title: "Kabak",
-    price: "9$/kg",
-    tag: "#kabak",
-    imageUrl: "https://picsum.photos/200/300",
-  },
-
-  // Daha fazla ürün ekleyin...
-];
+// Base64 image formatting function
+const formatBase64 = (base64String) => {
+  if (!base64String || base64String.trim() === "") {
+    return "https://via.placeholder.com/150"; // Default image if no base64 string
+  }
+  if (!base64String.startsWith("data:image")) {
+    return `data:image/jpeg;base64,${base64String}`;
+  }
+  return base64String;
+};
 
 function ProductGrid() {
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8; // Sayfa başına gösterilecek ürün sayısı
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(""); // Search query state
+  const [selectedCategory, setSelectedCategory] = useState(null); // Track selected category
+  const pageSize = 8;
+  const navigate = useNavigate();
 
-  // Mevcut sayfada gösterilecek ürünleri hesaplama
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const url = selectedCategory
+          ? `https://farmtwomarket.com/api/Product/GetProducts?category=${selectedCategory}`
+          : "https://farmtwomarket.com/api/Product/GetProducts";
+        const response = await axios.get(url);
+        if (response.status === 200) {
+          console.log("Products:", response.data);
+          setProducts(response.data);
+        } else {
+          setError("Error while fetching products.");
+        }
+      } catch (error) {
+        setError("An error occurred while fetching products.");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, [selectedCategory]);
+
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
-  const currentData = data.slice(startIndex, endIndex);
+
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const currentData = filteredProducts.slice(startIndex, endIndex);
+
+  const handleCardClick = (id) => {
+    navigate(`/product-detail/${id}`);
+  };
 
   return (
-    <div>
-      {/* Ürün Grid */}
-      <Row gutter={[10, 20]}>
-        {currentData.map((item, index) => (
-          <Col key={index} span={6} style={{ padding: "5px 10px" }}>
+    <div style={{ padding: "20px" }}>
+      {/* Search Input */}
+      <Input
+        placeholder="Search for a product"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        style={{ marginBottom: "20px", width: "100%" }}
+      />
+
+      {loading && <div>Loading...</div>}
+      {error && <div>{error}</div>}
+
+      <Row gutter={[16, 16]}>
+        {currentData.map((item) => (
+          <Col key={item.id} xs={24} sm={12} md={8} lg={6}>
             <Card
-              cover={
-                <img
-                  alt={item.title}
-                  src={item.imageUrl}
-                  style={{ height: "150px", objectFit: "cover" }}
-                />
-              }
-              style={{ width: "100%", height: "300px", textAlign: "left" }}
+              onClick={() => handleCardClick(item.id)}
+              style={{
+                width: "100%",
+                textAlign: "left",
+                cursor: "pointer",
+              }}
             >
+              <Carousel autoplay style={{ height: "150px" }}>
+                <div>
+                  <img
+                    alt={item.name}
+                    src={formatBase64(
+                      item.image1 || item.image2 || item.image3
+                    )}
+                    style={{
+                      width: "100%",
+                      height: "150px",
+                      objectFit: "cover",
+                    }}
+                  />
+                </div>
+                {item.image2 && (
+                  <div>
+                    <img
+                      alt={item.name}
+                      src={formatBase64(item.image2)}
+                      style={{
+                        width: "100%",
+                        height: "150px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </div>
+                )}
+                {item.image3 && (
+                  <div>
+                    <img
+                      alt={item.name}
+                      src={formatBase64(item.image3)}
+                      style={{
+                        width: "100%",
+                        height: "150px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </div>
+                )}
+              </Carousel>
+
               <div
                 style={{
                   display: "flex",
@@ -118,37 +135,28 @@ function ProductGrid() {
                   alignItems: "center",
                 }}
               >
-                <h3 style={{ margin: 0, fontSize: "16px" }}>{item.title}</h3>
+                <h3 style={{ margin: 0, fontSize: "16px" }}>{item.name}</h3>
                 <Button
                   type="text"
                   icon={
                     <HeartOutlined
-                      style={{ fontSize: "20px", color: "#2F4F2F" }}
+                      style={{ fontSize: "20px", color: "#f5222d" }}
                     />
                   }
                 />
               </div>
-              <p style={{ margin: "5px 0", fontSize: "14px" }}>{item.price}</p>
-              <div
-                style={{
-                  border: "1px solid #ddd",
-                  padding: "5px",
-                  display: "inline-block",
-                  fontSize: "12px",
-                }}
-              >
-                {item.tag}
-              </div>
+              <p style={{ margin: 0, fontSize: "14px", color: "#333" }}>
+                {item.price} {item.unitType}
+              </p>
             </Card>
           </Col>
         ))}
       </Row>
 
-      {/* Sayfalama */}
       <Pagination
         current={currentPage}
+        total={filteredProducts.length}
         pageSize={pageSize}
-        total={data.length}
         onChange={(page) => setCurrentPage(page)}
         style={{ textAlign: "center", marginTop: "20px" }}
       />

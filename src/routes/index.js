@@ -7,9 +7,12 @@ import LoginPage from "../components/LoginRegister/loginPage";
 import RegisterPage from "../components/LoginRegister/registerPage";
 import PageSepet from "../components/PageSepet/PageSepet";
 import PageFavorite from "../components/PageFavori/PageFavori";
-import DetailPage from "../components/MainPage/DetailPage";
 import ConfirmMailPage from "../components/LoginRegister/ConfirmEmailPage";
 import UrunEkleForm from "../components/MainPage/ProductAdd/productAdd";
+import SaleProduct from "../components/MainPage/FarmerSaleProduct/saleProduct";
+import BuyProduct from "../components/MainPage/MarketBuyProduct/buyProduct";
+import FarmerByProduct from "../components/MainPage/FarmerSaleProduct/farmerByProduct";
+import ProductDetailShow from "../components/MainPage/productDetailShow";
 
 function AppRouter() {
   return (
@@ -18,14 +21,18 @@ function AppRouter() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />}></Route>
       <Route path="/mainPage" element={<MainPage />} />
+      <Route path="/addProduct" element={<UrunEkleForm />} />
       <Route path="/page-sepet" element={<PageSepet></PageSepet>}></Route>
       <Route
         path="/page-favori"
         element={<PageFavorite></PageFavorite>}
       ></Route>
-      <Route path="/product-detail/:id" element={<DetailPage />} />
+      <Route path="/product-detail/:id" element={<ProductDetailShow />} />
       <Route path="/confirm-mail" element={<ConfirmMailPage />} />
       <Route path="/urun-ekle" element={<UrunEkleForm />} />
+      <Route path="/farmersatislarim" element={<SaleProduct />} />
+      <Route path="/marketalislarim" element={<BuyProduct />} />
+      <Route path="/farmerurunler" element={<FarmerByProduct />} />
     </Routes>
   );
 }

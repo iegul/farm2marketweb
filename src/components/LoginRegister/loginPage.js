@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Row, Col, Input, Button, Typography, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import f2mImage from "../../images/f2m-Photoroom.png";
 import { useUser } from "../Context/UserContext";
+import f2mImage from "../../images/f2m-Photoroom.png";
 
 const { Text } = Typography;
 
@@ -28,23 +28,29 @@ function LoginPage() {
       const response = await axios.post(
         "https://farmtwomarket.com/api/Auth/Login",
         { email, password },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        { headers: { "Content-Type": "application/json" } }
       );
 
-      const { emailConfirmed, token, userId, userName, userRole } =
+      // Gelen response'dan token'ı konsola yazdırıyoruz
+      const { emailConfirmed, token, userName, userRole, confirmationNumber } =
         response.data.data;
+      //console.log(token); // Token'ı konsola yazdırın
 
-      const userData = { email, token, userId, userName, userRole };
+      const userData = {
+        email,
+        token,
+        userName,
+        userRole,
+        emailConfirmed,
+        confirmationNumber,
+      };
       setUser(userData);
       localStorage.setItem("user", JSON.stringify(userData));
 
-      // Kullanıcı e-posta doğrulama durumunu kontrol et
       if (!emailConfirmed) {
-        message.info("E-posta doğrulamanız gerekmektedir.");
+        message.info(
+          "E-posta doğrulamanız gerekiyor. Doğrulama sayfasına yönlendiriliyorsunuz."
+        );
         navigate("/confirm-mail");
       } else {
         message.success("Başarıyla giriş yaptınız!");
@@ -53,7 +59,6 @@ function LoginPage() {
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Giriş sırasında bir hata oluştu.";
-      console.error("Giriş işlemi hatası:", error.response?.data || error);
       message.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -82,93 +87,35 @@ function LoginPage() {
           boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
         }}
       >
-        {/* Hesabım Butonu */}
-        <Col span={24} style={{ textAlign: "left", paddingBottom: "20px" }}>
-          <Button
-            type="link"
-            icon={<i className="fas fa-arrow-left"></i>}
-            style={{
-              color: "#7E8957",
-              transition: "color 0.3s ease",
-            }}
-            onMouseEnter={(e) => (e.target.style.color = "#98a77a")}
-            onMouseLeave={(e) => (e.target.style.color = "#7E8957")}
-          >
-            Hesabım
-          </Button>
-        </Col>
-
-        {/* Logo Alanı */}
         <Col span={24} style={{ textAlign: "center", marginBottom: "20px" }}>
-          <div
-            style={{
-              width: "100px",
-              height: "100px",
-              borderRadius: "50%",
-              backgroundColor: "#ffffff",
-              margin: "0 auto",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "24px",
-            }}
-          >
-            <img src={f2mImage} alt="Logo" style={{ maxWidth: "100%" }}></img>
-          </div>
+          <img src={f2mImage} alt="Logo" style={{ maxWidth: "100%" }} />
         </Col>
 
-        {/* Form Alanı */}
         <Col span={24}>
           <Input
             placeholder="E-Posta"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={{
-              marginBottom: "15px",
-              borderRadius: "5px",
-              padding: "10px",
-              borderColor: "#7E8957",
-              transition: "border-color 0.3s ease",
-            }}
-            onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
-            onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
+            style={{ marginBottom: "15px", borderRadius: "5px" }}
           />
           <Input.Password
             placeholder="Şifre"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={{
-              marginBottom: "15px",
-              borderRadius: "5px",
-              padding: "10px",
-              borderColor: "#7E8957",
-              transition: "border-color 0.3s ease",
-            }}
-            onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
-            onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
+            style={{ marginBottom: "15px", borderRadius: "5px" }}
           />
           <Button
             type="primary"
             block
-            style={{
-              backgroundColor: "#7E8957",
-              borderColor: "#7E8957",
-              marginBottom: "15px",
-              borderRadius: "5px",
-              transition: "background-color 0.3s ease",
-            }}
+            style={{ backgroundColor: "#7E8957", borderRadius: "5px" }}
             onClick={handleSubmit}
+            loading={isLoading}
           >
             Giriş Yap
           </Button>
-          <div style={{ textAlign: "center", marginBottom: "15px" }}>
+          <div style={{ textAlign: "center", marginTop: "15px" }}>
             <Text>Hesabınız yok mu? </Text>
-            <Link
-              to="/register"
-              style={{ color: "#7E8957", transition: "color 0.3s ease" }}
-            >
-              Kayıt Ol
-            </Link>
+            <Link to="/register">Kayıt Ol</Link>
           </div>
         </Col>
       </Row>

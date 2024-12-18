@@ -4,15 +4,19 @@ const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    // Tarayıcı yenilendiğinde localStorage'dan kullanıcı bilgilerini yükle
     const savedUser = localStorage.getItem("user");
     return savedUser
       ? JSON.parse(savedUser)
-      : { email: "", token: "", userId: "" };
+      : {
+          username: "",
+          email: "",
+          token: "",
+          userId: "",
+          confirmationNumber: "",
+        };
   });
 
   useEffect(() => {
-    // Kullanıcı güncellendiğinde localStorage'a kaydet
     localStorage.setItem("user", JSON.stringify(user));
   }, [user]);
 

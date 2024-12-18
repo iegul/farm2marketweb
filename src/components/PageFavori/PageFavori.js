@@ -1,7 +1,8 @@
 import React from "react";
 import { Card, Row, Col, Button, Typography } from "antd";
-import { HeartFilled, CheckCircleOutlined } from "@ant-design/icons";
+import { HeartFilled } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../Context/UserContext";
 
 const { Text } = Typography;
 
@@ -10,7 +11,7 @@ const favoriteItems = [
     id: 1,
     title: "Domates",
     details: "10₺/kg",
-    icon: <CheckCircleOutlined style={{ color: "green" }} />,
+    icon: null,
     image: "https://picsum.photos/300/200?random=1",
   },
   {
@@ -37,7 +38,54 @@ const favoriteItems = [
 ];
 
 const PageFavori = () => {
+  const { user } = useUser(); // Kullanıcı bilgilerini context'ten al
   const navigate = useNavigate();
+
+  // Kullanıcı giriş yapmadıysa yönlendir
+  if (!user?.token) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <Card
+          style={{
+            textAlign: "center",
+            padding: "20px",
+            maxWidth: "400px",
+            margin: "50px auto",
+            border: "1px solid #d9d9d9",
+            borderRadius: "8px",
+          }}
+        >
+          <Row justify="center" style={{ marginBottom: "16px" }}>
+            <Text style={{ fontSize: "18px", fontWeight: "bold" }}>
+              Favorilerinizi Görüntülemek İçin
+            </Text>
+          </Row>
+          <Row justify="center">
+            <Button
+              type="primary"
+              onClick={() => navigate("/login")}
+              style={{
+                fontSize: "16px",
+                padding: "10px 30px",
+                backgroundColor: "#7E8957",
+                borderColor: "#7E8957",
+                borderRadius: "5px",
+              }}
+            >
+              Giriş Yapın
+            </Button>
+          </Row>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: "16px", maxWidth: "1200px", margin: "0 auto" }}>

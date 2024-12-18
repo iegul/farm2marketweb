@@ -6,14 +6,14 @@ import { useUser } from "../Context/UserContext";
 
 function ConfirmMailPage() {
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, setUser } = useUser();
 
   const [verificationCode, setVerificationCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const email = user?.email;
   const token = user?.token;
-  console.log("Token: ", token);
+  const confirmationNumber = user?.confirmationNumber;
 
   const handleConfirm = async () => {
     if (!verificationCode) {
@@ -21,36 +21,49 @@ function ConfirmMailPage() {
       return;
     }
 
+    if (!token) {
+      message.error("Oturum süreniz dolmuş. Lütfen tekrar giriş yapınız.");
+      navigate("/login");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const response = await axios.get(
-        "https://farmtwomarket.com/api/Auth/ConfirmMail",
+      // Query param ile doğrulama kodu gönderiliyor
+      const response = await axios.post(
+        `https://farmtwomarket.com/api/Auth/ConfirmMail?number=${verificationCode}`,
+        null, // Body yoksa bu şekilde null gönderebilirsin
         {
           headers: {
             Authorization: `Bearer ${token}`,
-          },
-          params: {
-            number: verificationCode,
+            "Content-Type": "application/json",
           },
         }
       );
 
-      if (response.data.success) {
+      if (response.data.succeeded) {
+        const updatedUser = { ...user, emailConfirmed: true };
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
         message.success(
-          "Doğrulama başarılı! Giriş sayfasına yönlendiriliyorsunuz."
+          "Doğrulama başarılı! Ana sayfaya yönlendiriliyorsunuz."
         );
-        setTimeout(() => {
-          navigate("/mainpage");
-        }, 500);
+        navigate("/mainPage");
       } else {
-        message.error("Doğrulama kodu hatalı veya süresi dolmuş.");
+        message.error(response.data.error || "Doğrulama kodu hatalı.");
       }
     } catch (error) {
-      console.error("Doğrulama hatası:", error.response?.data || error.message);
-      message.error(
-        error.response?.data?.message || "Doğrulama sırasında bir hata oluştu."
-      );
+      if (error.response?.status === 400) {
+        message.error("Geçersiz istek. Lütfen doğrulama kodunu kontrol edin.");
+      } else if (error.response?.status === 401) {
+        message.error("Yetkilendirme hatası. Lütfen tekrar giriş yapın.");
+        navigate("/login");
+      } else if (error.response?.data?.error) {
+        message.error(error.response.data.error);
+      } else {
+        message.error("Doğrulama sırasında bir hata oluştu.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -112,6 +125,7 @@ function ConfirmMailPage() {
         >
           Doğrula
         </Button>
+        <Button type="link">Doğrulama Kodunu Tekrar Gönder</Button>
       </div>
     </div>
   );

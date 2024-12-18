@@ -2,11 +2,10 @@ import React from "react";
 import { Card, Row, Col, Button, Typography } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../Context/UserContext";
 
 const { Text } = Typography;
 
-const sepetItems = [
+const saleItems = [
   {
     id: 1,
     title: "Domates",
@@ -35,57 +34,10 @@ const sepetItems = [
   },
 ];
 
-const PageSepet = () => {
-  const { user } = useUser(); // Kullanıcı bilgilerini context'ten al
+const SaleProduct = () => {
   const navigate = useNavigate();
 
-  // Kullanıcı giriş yapmadıysa yönlendir
-  if (!user?.token) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <Card
-          style={{
-            textAlign: "center",
-            padding: "20px",
-            maxWidth: "400px",
-            margin: "50px auto",
-            border: "1px solid #d9d9d9",
-            borderRadius: "8px",
-          }}
-        >
-          <Row justify="center" style={{ marginBottom: "16px" }}>
-            <Text style={{ fontSize: "18px", fontWeight: "bold" }}>
-              Alışverişe Başlamak İçin
-            </Text>
-          </Row>
-          <Row justify="center">
-            <Button
-              type="primary"
-              onClick={() => navigate("/login")}
-              style={{
-                fontSize: "16px",
-                padding: "10px 30px",
-                backgroundColor: "#7E8957",
-                borderColor: "#7E8957",
-                borderRadius: "5px",
-              }}
-            >
-              Giriş Yapın
-            </Button>
-          </Row>
-        </Card>
-      </div>
-    );
-  }
-
-  const totalPrice = sepetItems.reduce(
+  const totalPrice = saleItems.reduce(
     (sum, item) => sum + parseInt(item.price.replace("₺", "")),
     0
   );
@@ -96,12 +48,12 @@ const PageSepet = () => {
         ← Ana Sayfa
       </Button>
       <Card
-        title={<Text strong>Sepetiniz</Text>}
+        title={<Text strong>Satış Yapılan Ürünler</Text>}
         bordered
         style={{ marginTop: "16px" }}
       >
         <Row gutter={[16, 16]}>
-          {sepetItems.map((item) => (
+          {saleItems.map((item) => (
             <Col key={item.id} span={24}>
               <Card bordered bodyStyle={{ textAlign: "left" }}>
                 <div>
@@ -113,6 +65,7 @@ const PageSepet = () => {
                 </div>
                 <div>{item.estimatedDate}</div>
 
+                {/* Display images side by side */}
                 <Row gutter={[8, 8]} style={{ marginTop: "8px" }}>
                   {item.images.map((image, index) => (
                     <Col key={index} span={8}>
@@ -137,20 +90,11 @@ const PageSepet = () => {
           ))}
         </Row>
         <div style={{ marginTop: "16px", textAlign: "right" }}>
-          <Text strong>Toplam Tutar: {totalPrice}₺</Text>
+          <Text strong>Toplam Satış: {totalPrice}₺</Text>
         </div>
-        <Button
-          type="primary"
-          style={{
-            display: "block",
-            margin: "16px auto",
-          }}
-        >
-          Sepeti Onayla
-        </Button>
       </Card>
     </div>
   );
 };
 
-export default PageSepet;
+export default SaleProduct;
