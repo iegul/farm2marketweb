@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Card, Button, Pagination, Carousel, Input } from "antd";
-import { HeartOutlined } from "@ant-design/icons";
+import {
+  Row,
+  Col,
+  Card,
+  Button,
+  Pagination,
+  Carousel,
+  Input,
+  message,
+} from "antd";
+import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useUser } from "../Context/UserContext";
 
-// Base64 image formatting function
 const formatBase64 = (base64String) => {
   if (!base64String || base64String.trim() === "") {
-    return "https://via.placeholder.com/150"; // Default image if no base64 string
+    return "https://via.placeholder.com/150";
   }
   if (!base64String.startsWith("data:image")) {
     return `data:image/jpeg;base64,${base64String}`;
@@ -15,15 +24,17 @@ const formatBase64 = (base64String) => {
   return base64String;
 };
 
-function ProductGrid() {
+function ProductGrid({ selectedCategory }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState(""); // Search query state
-  const [selectedCategory, setSelectedCategory] = useState(null); // Track selected category
+  const [favorites, setFavorites] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const pageSize = 8;
   const navigate = useNavigate();
+  const { user } = useUser();
+  const token = user?.token;
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -34,7 +45,6 @@ function ProductGrid() {
           : "https://farmtwomarket.com/api/Product/GetProducts";
         const response = await axios.get(url);
         if (response.status === 200) {
-          console.log("Products:", response.data);
           setProducts(response.data);
         } else {
           setError("Error while fetching products.");
@@ -46,8 +56,29 @@ function ProductGrid() {
         setLoading(false);
       }
     };
+
+    const fetchFavorites = async () => {
+      if (!token) return;
+      try {
+        const response = await axios.get(
+          "https://farmtwomarket.com/api/Favorite/favorites",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.status === 200) {
+          setFavorites(response.data.map((item) => item.id));
+        }
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+      }
+    };
+
     fetchProducts();
-  }, [selectedCategory]);
+    fetchFavorites();
+  }, [selectedCategory, token]);
 
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
@@ -62,9 +93,47 @@ function ProductGrid() {
     navigate(`/product-detail/${id}`);
   };
 
+  const toggleFavorite = async (productId) => {
+    if (!token) {
+      message.error("You need to log in to manage favorites.");
+      return;
+    }
+
+    const isCurrentlyFavorite = favorites.includes(productId);
+
+    try {
+      if (isCurrentlyFavorite) {
+        await axios.delete(
+          `https://farmtwomarket.com/api/Favorite/remove?productId=${productId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setFavorites(favorites.filter((id) => id !== productId));
+        message.success("Product removed from favorites.");
+      } else {
+        await axios.post(
+          `https://farmtwomarket.com/api/Favorite/Add?productId=${productId}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setFavorites([...favorites, productId]);
+        message.success("Product added to favorites.");
+      }
+    } catch (error) {
+      console.error("Error managing favorite:", error);
+      message.error("An error occurred while managing favorites.");
+    }
+  };
+
   return (
     <div style={{ padding: "20px" }}>
-      {/* Search Input */}
       <Input
         placeholder="Search for a product"
         value={searchQuery}
@@ -136,17 +205,35 @@ function ProductGrid() {
                 }}
               >
                 <h3 style={{ margin: 0, fontSize: "16px" }}>{item.name}</h3>
-                <Button
-                  type="text"
-                  icon={
-                    <HeartOutlined
-                      style={{ fontSize: "20px", color: "#f5222d" }}
-                    />
-                  }
-                />
+                {user?.userRole === "MarketReceiver" && (
+                  <Button
+                    type="text"
+                    icon={
+                      favorites.includes(item.id) ? (
+                        <HeartFilled
+                          style={{ fontSize: "20px", color: "#f5222d" }}
+                        />
+                      ) : (
+                        <HeartOutlined
+                          style={{ fontSize: "20px", color: "#f5222d" }}
+                        />
+                      )
+                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(item.id);
+                    }}
+                  />
+                )}
               </div>
+
               <p style={{ margin: 0, fontSize: "14px", color: "#333" }}>
-                {item.price} {item.unitType}
+                {item.price} ₺
+              </p>
+              <p style={{ margin: 0, fontSize: "14px", color: "#333" }}>
+                {item.weightOrAmount && item.unitType
+                  ? `${item.weightOrAmount} ${item.unitType}`
+                  : "Bilgi yok"}
               </p>
             </Card>
           </Col>

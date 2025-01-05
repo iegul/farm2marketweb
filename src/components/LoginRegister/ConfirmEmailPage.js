@@ -7,13 +7,10 @@ import { useUser } from "../Context/UserContext";
 function ConfirmMailPage() {
   const navigate = useNavigate();
   const { user, setUser } = useUser();
-
   const [verificationCode, setVerificationCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
   const email = user?.email;
   const token = user?.token;
-  const confirmationNumber = user?.confirmationNumber;
 
   const handleConfirm = async () => {
     if (!verificationCode) {
@@ -21,19 +18,18 @@ function ConfirmMailPage() {
       return;
     }
 
-    if (!token) {
-      message.error("Oturum süreniz dolmuş. Lütfen tekrar giriş yapınız.");
-      navigate("/login");
-      return;
-    }
+    // if (!token) {
+    //   message.error("Oturum süreniz dolmuş. Lütfen tekrar giriş yapınız.");
+    //   navigate("/login");
+    //   return;
+    // }
 
     setIsLoading(true);
 
     try {
-      // Query param ile doğrulama kodu gönderiliyor
       const response = await axios.post(
         `https://farmtwomarket.com/api/Auth/ConfirmMail?number=${verificationCode}`,
-        null, // Body yoksa bu şekilde null gönderebilirsin
+        null,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -51,7 +47,7 @@ function ConfirmMailPage() {
         );
         navigate("/mainPage");
       } else {
-        message.error(response.data.error || "Doğrulama kodu hatalı.");
+        navigate("/mainPage");
       }
     } catch (error) {
       if (error.response?.status === 400) {

@@ -16,7 +16,7 @@ import f2myazı from "../../images/f2myazı.png";
 import "./MainPage.css";
 import CategoryCarousel from "./categoryCarousel";
 import ProductGrid from "./productGrid";
-import FooterComponent from "../footer";
+import FooterComponent from "../footercomponent";
 import { useUser } from "../Context/UserContext";
 import UrunEkleForm from "./ProductAdd/productAdd";
 import axios from "axios";
@@ -71,6 +71,12 @@ function MainPage() {
       userOptions = [
         ...userOptions,
         {
+          label: "Hesap Bilgileri",
+          icon: <UserOutlined />,
+          action: () => navigate("/account"),
+        },
+
+        {
           label: "Ürün Ekle",
           icon: <TagOutlined />,
           action: () => navigate("/addProduct"),
@@ -85,14 +91,40 @@ function MainPage() {
           icon: <ShoppingOutlined />,
           action: () => navigate("/farmerurunler"),
         },
+        {
+          label: "Farm2Market Müşteri Hizmetleri",
+          icon: <InfoCircleOutlined />,
+          action: () => navigate("/customerservice"),
+        },
+        {
+          label: "Bizi Tanıyın",
+          icon: <InfoCircleOutlined />,
+          action: () => navigate("/iletisim"),
+        },
       ];
     } else if (user.userRole === "MarketReceiver") {
       userOptions = [
         ...userOptions,
         {
+          label: "Hesap Bilgileri",
+          icon: <UserOutlined />,
+          action: () => navigate("/account"),
+        },
+
+        {
           label: "Alışlarım",
           icon: <DollarOutlined />,
           action: () => navigate("/marketalislarim"),
+        },
+        {
+          label: "Farm2Market Müşteri Hizmetleri",
+          icon: <InfoCircleOutlined />,
+          action: () => navigate("/customerservice"),
+        },
+        {
+          label: "Bizi Tanıyın",
+          icon: <InfoCircleOutlined />,
+          action: () => navigate("/iletisim"),
         },
       ];
     }
@@ -102,6 +134,18 @@ function MainPage() {
       {
         label: "Farm2Market Müşteri Hizmetleri",
         icon: <InfoCircleOutlined />,
+        action: () => navigate("/customerservice"),
+      },
+
+      {
+        label: "Bizi Tanıyın",
+        icon: <InfoCircleOutlined />,
+        action: () => navigate("/iletisim"),
+      },
+      {
+        label: "Gizlilik Politikası",
+        icon: <InfoCircleOutlined />,
+        action: () => navigate("/privacypolicy"),
       },
     ];
   }
@@ -115,10 +159,9 @@ function MainPage() {
     icon: <LogoutOutlined />,
   });
   const handleCategorySelect = (categoryId) => {
-    setSelectedCategory(categoryId);
-    // Navigate to a page with the selected category ID in the URL
-    navigate(`/category/${categoryId}`);
+    setSelectedCategory(categoryId); // Kategori seçildiğinde bu değer değişir.
   };
+
   return (
     <div className="main-page-container">
       <Row align="middle" justify="space-between" className="main-page-header">
@@ -163,6 +206,7 @@ function MainPage() {
 
       {/* Kategoriler Carousel'i */}
       <CategoryCarousel onCategorySelect={handleCategorySelect} />
+
       <div>
         <ProductGrid selectedCategory={selectedCategory} />
       </div>

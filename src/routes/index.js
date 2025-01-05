@@ -13,6 +13,11 @@ import SaleProduct from "../components/MainPage/FarmerSaleProduct/saleProduct";
 import BuyProduct from "../components/MainPage/MarketBuyProduct/buyProduct";
 import FarmerByProduct from "../components/MainPage/FarmerSaleProduct/farmerByProduct";
 import ProductDetailShow from "../components/MainPage/productDetailShow";
+import Contact from "../components/MainPage/Drawer/contect";
+import CustomerService from "../components/MainPage/Drawer/customerservice";
+import PrivacyPolicy from "../components/MainPage/Drawer/privacypolicy";
+import AccountPage from "../components/MainPage/Drawer/accountPage";
+import OrderSummary from "../components/PageSepet/OrderSummary";
 
 function AppRouter() {
   return (
@@ -33,6 +38,11 @@ function AppRouter() {
       <Route path="/farmersatislarim" element={<SaleProduct />} />
       <Route path="/marketalislarim" element={<BuyProduct />} />
       <Route path="/farmerurunler" element={<FarmerByProduct />} />
+      <Route path="/iletisim" element={<Contact />}></Route>
+      <Route path="/customerservice" element={<CustomerService />}></Route>
+      <Route path="/privacypolicy" element={<PrivacyPolicy />}></Route>
+      <Route path="/account" element={<AccountPage />}></Route>
+      <Route path="/ordersummary" element={<OrderSummary />} />
     </Routes>
   );
 }

@@ -1,41 +1,71 @@
-import React from "react";
-import { Card, Row, Col, Button, Typography } from "antd";
-import { CheckCircleOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { Card, Row, Col, Button, Typography, message, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useUser } from "../../Context/UserContext"; // Token için
 
 const { Text } = Typography;
 
-const buyItems = [
-  {
-    id: 1,
-    title: "Domates",
-    details: "10₺/kg",
-    price: "100₺",
-    estimatedDate: "Teslim Tarihi: 22/11/2024",
-    images: [
-      "https://picsum.photos/300/200?random=1",
-      "https://picsum.photos/300/200?random=2",
-      "https://picsum.photos/300/200?random=3",
-    ],
-    icon: <CheckCircleOutlined style={{ color: "green" }} />,
-  },
-  {
-    id: 2,
-    title: "Salatalık",
-    details: "10₺/kg",
-    price: "200₺",
-    estimatedDate: "Teslim Tarihi: 24/11/2024",
-    images: [
-      "https://picsum.photos/300/200?random=4",
-      "https://picsum.photos/300/200?random=5",
-      "https://picsum.photos/300/200?random=6",
-    ],
-    icon: null,
-  },
-];
-
 const BuyProduct = () => {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { user } = useUser(); // Kullanıcıdan token alınır
+  const token = user?.token;
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (!token) {
+        message.error("Lütfen giriş yapın.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          "https://farmtwomarket.com/api/Cart/GetPaidOrders",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.status === 200 && Array.isArray(response.data)) {
+          setOrders(response.data);
+        } else {
+          message.error("Siparişler yüklenemedi.");
+        }
+      } catch (error) {
+        console.error("Fetch Error:", error.response?.data || error.message);
+        message.error("Siparişleri çekerken bir hata oluştu.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, [token]);
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (orders.length === 0) {
+    return (
+      <div style={{ padding: "16px", textAlign: "center" }}>
+        <Button type="link" onClick={() => navigate("/mainPage")}>
+          ← Ana Sayfa
+        </Button>
+        <Card title={<Text strong>Satın Alınan Ürünler</Text>} bordered>
+          <Text>Henüz satın alınmış bir ürün bulunmamaktadır.</Text>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: "16px", maxWidth: "900px", margin: "0 auto" }}>
@@ -48,38 +78,29 @@ const BuyProduct = () => {
         style={{ marginTop: "16px" }}
       >
         <Row gutter={[16, 16]}>
-          {buyItems.map((item) => (
-            <Col key={item.id} span={24}>
+          {orders.map((order) => (
+            <Col key={order.orderId} span={24}>
               <Card bordered bodyStyle={{ textAlign: "left" }}>
                 <div>
-                  <Text strong>{item.title}</Text>
+                  <Text strong>Sipariş Tarihi: </Text>{" "}
+                  {new Date(order.orderDate).toLocaleDateString()}
                 </div>
-                <div>{item.details}</div>
                 <div>
-                  <Text strong>{item.price}</Text>
+                  <Text strong>Toplam Fiyat: </Text> {order.totalPrice}₺
                 </div>
-                <div>{item.estimatedDate}</div>
 
-                {/* Display images side by side */}
-                <Row gutter={[8, 8]} style={{ marginTop: "8px" }}>
-                  {item.images.map((image, index) => (
-                    <Col key={index} span={8}>
-                      <img
-                        alt={`${item.title}-${index}`}
-                        src={image}
-                        style={{
-                          width: "100%",
-                          height: "auto",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </Col>
+                <div style={{ marginTop: "16px" }}>
+                  <Text strong>Ürünler:</Text>
+                  {order.items.map((item, index) => (
+                    <div
+                      key={index}
+                      style={{ marginTop: "8px", paddingLeft: "16px" }}
+                    >
+                      <Text>{item.productName}</Text> - {item.quantity} adet -{" "}
+                      {item.price}₺
+                    </div>
                   ))}
-                </Row>
-
-                {item.icon && (
-                  <div style={{ marginTop: "8px" }}>{item.icon}</div>
-                )}
+                </div>
               </Card>
             </Col>
           ))}

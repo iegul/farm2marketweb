@@ -3,7 +3,7 @@ import { message } from "antd";
 import axios from "axios";
 import { useUser } from "../../Context/UserContext";
 import { useNavigate } from "react-router-dom";
-import ProductForm from "./ProductForm"; // Yeni component'i import et
+import ProductForm from "./ProductForm";
 
 const UrunEkleForm = () => {
   const navigate = useNavigate();

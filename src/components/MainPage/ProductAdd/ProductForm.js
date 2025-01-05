@@ -45,13 +45,36 @@ const ProductForm = ({
       >
         <TextArea rows={3} placeholder="Ürün hakkında kısa açıklama" />
       </Form.Item>
-
-      <Form.Item
-        label="Ağırlık / Miktar"
-        name="productWeightOrAmount"
-        rules={[{ required: true, message: "Ağırlık veya miktar gereklidir!" }]}
-      >
-        <InputNumber style={{ width: "100%" }} min={0} placeholder="Ör: 10" />
+      <Form.Item label="Ağırlık" required>
+        <Input.Group compact>
+          <Form.Item
+            name="productWeightOrAmount"
+            label="Ağırlık / Miktar"
+            rules={[
+              { required: true, message: "Ağırlık veya miktar gereklidir!" },
+            ]}
+            noStyle
+          >
+            <InputNumber
+              style={{ width: "70%" }}
+              placeholder="Ör: 15"
+              min={0}
+            />
+          </Form.Item>
+          <Form.Item
+            name="priceUnit"
+            rules={[{ required: true, message: "Birim seçilmelidir!" }]}
+            noStyle
+          >
+            <Select style={{ width: "30%" }} placeholder="Birim">
+              {["Kilogram", "Adet", "Litre", "Diğer"].map((unit) => (
+                <Select.Option key={unit} value={unit}>
+                  {unit}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Input.Group>
       </Form.Item>
 
       <Form.Item
@@ -98,23 +121,10 @@ const ProductForm = ({
             noStyle
           >
             <InputNumber
-              style={{ width: "70%" }}
+              style={{ width: "100%" }}
               placeholder="Ör: 15"
               min={0}
             />
-          </Form.Item>
-          <Form.Item
-            name="priceUnit"
-            rules={[{ required: true, message: "Birim seçilmelidir!" }]}
-            noStyle
-          >
-            <Select style={{ width: "30%" }} placeholder="Birim">
-              {["₺/kg", "₺/adet", "₺/paket", "₺/litre"].map((unit) => (
-                <Select.Option key={unit} value={unit}>
-                  {unit}
-                </Select.Option>
-              ))}
-            </Select>
           </Form.Item>
         </Input.Group>
       </Form.Item>

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Row, Col, Input, Button, message, Tabs } from "antd";
+import { Row, Col, Input, Button, message, Tabs, Select } from "antd";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import TabPane from "antd/es/tabs/TabPane";
 import { useNavigate } from "react-router-dom";
+const { Option } = Select;
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -17,11 +18,11 @@ function RegisterPage() {
   const [marketName, setMarketName] = useState("");
   const [companyType, setCompanyType] = useState("");
 
-  const isValidForm_1 = () => {
+  const handleFarmerRegister = () => {
     return firstName && lastName && userName && email && password && adress;
   };
 
-  const isValidForm_2 = () => {
+  const handleMarketRegister = () => {
     return (
       firstName &&
       lastName &&
@@ -36,7 +37,7 @@ function RegisterPage() {
 
   //Çiftçi Form Submit
   const handleSubmit = async () => {
-    if (!isValidForm_1()) {
+    if (!handleFarmerRegister()) {
       message.warning("Lütfen tüm alanları doldurun.");
       return;
     }
@@ -58,7 +59,7 @@ function RegisterPage() {
       if (response.status === 200) {
         message.success("Kayıt Başarılı!");
       }
-      navigate("/confirm-mail", { state: { email } });
+      navigate("/login");
     } catch (error) {
       console.error("Kayıt İşlemi Başarısız: ", error);
       message.error("Kayıt sırasında bir hata oluştu");
@@ -67,7 +68,7 @@ function RegisterPage() {
 
   //Market Form Submit
   const handleSubmit_2 = async () => {
-    if (!isValidForm_2()) {
+    if (!handleMarketRegister()) {
       message.warning("Lütfen tüm alanları doldurun.");
       return;
     }
@@ -91,7 +92,7 @@ function RegisterPage() {
       if (response.status === 200) {
         message.success("Kayıt Başarılı!");
       }
-      navigate("/confirm-mail", { state: { email } });
+      navigate("/login");
     } catch (error) {
       console.error("Kayıt İşlemi Başarısız: ", error);
       message.error("Kayıt sırasında bir hata oluştu");
@@ -252,28 +253,6 @@ function RegisterPage() {
                   Kayıt Ol
                 </Button>
               </Link>
-
-              <Button
-                block
-                icon={<i className="fab fa-google"></i>}
-                style={{
-                  borderColor: "#7E8957",
-                  color: "#7E8957",
-                  borderRadius: "5px",
-                  padding: "10px",
-                  transition: "border-color 0.3s ease, color 0.3s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.borderColor = "#98a77a";
-                  e.target.style.color = "#98a77a";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.borderColor = "#7E8957";
-                  e.target.style.color = "#7E8957";
-                }}
-              >
-                Google ile Kayıt Ol
-              </Button>
             </Col>
           </TabPane>
 
@@ -350,7 +329,7 @@ function RegisterPage() {
                 onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
               />
               <Input
-                placeholder="MarketName"
+                placeholder="Market Adı"
                 value={marketName}
                 onChange={(e) => setMarketName(e.target.value)}
                 style={{
@@ -363,20 +342,29 @@ function RegisterPage() {
                 onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
                 onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
               />
-              <Input
-                placeholder="CompanyType"
+              <Select
+                placeholder="Şirket Türü"
                 value={companyType}
-                onChange={(e) => setCompanyType(e.target.value)}
+                onChange={(value) => setCompanyType(value)}
                 style={{
                   marginBottom: "15px",
                   borderRadius: "5px",
-                  padding: "10px",
+                  width: "100%",
                   borderColor: "#7E8957",
-                  transition: "border-color 0.3s ease",
                 }}
                 onFocus={(e) => (e.target.style.borderColor = "#7E8957")}
                 onBlur={(e) => (e.target.style.borderColor = "#d9d9d9")}
-              />
+              >
+                <Option value="Anonim Şirketi (A.Ş)">
+                  Anonim Şirketi (A.Ş)
+                </Option>
+                <Option value="Limited Şirketi (Ltd. Şti.)">
+                  Limited Şirketi (Ltd. Şti.)
+                </Option>
+                <Option value="Şahıs Şirketi">Şahıs Şirketi</Option>
+                <Option value="Komandit Şirket">Komandit Şirket</Option>
+                <Option value="Kooperatif">Kooperatif</Option>
+              </Select>
               <Input.Password
                 placeholder="Şifre"
                 value={password}
@@ -418,28 +406,6 @@ function RegisterPage() {
                   Kayıt Ol
                 </Button>
               </Link>
-
-              <Button
-                block
-                icon={<i className="fab fa-google"></i>}
-                style={{
-                  borderColor: "#7E8957",
-                  color: "#7E8957",
-                  borderRadius: "5px",
-                  padding: "10px",
-                  transition: "border-color 0.3s ease, color 0.3s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.borderColor = "#98a77a";
-                  e.target.style.color = "#98a77a";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.borderColor = "#7E8957";
-                  e.target.style.color = "#7E8957";
-                }}
-              >
-                Google ile Kayıt Ol
-              </Button>
             </Col>
           </TabPane>
         </Tabs>

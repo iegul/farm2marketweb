@@ -1,46 +1,71 @@
-import React from "react";
-import { Card, Row, Col, Button, Typography } from "antd";
-import { CheckCircleOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { Card, Row, Col, Button, Typography, message, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useUser } from "../../Context/UserContext"; // Token için context
 
 const { Text } = Typography;
 
-const saleItems = [
-  {
-    id: 1,
-    title: "Domates",
-    details: "10₺/kg",
-    price: "100₺",
-    estimatedDate: "Teslim Tarihi: 22/11/2024",
-    images: [
-      "https://picsum.photos/300/200?random=1",
-      "https://picsum.photos/300/200?random=2",
-      "https://picsum.photos/300/200?random=3",
-    ],
-    icon: <CheckCircleOutlined style={{ color: "green" }} />,
-  },
-  {
-    id: 2,
-    title: "Salatalık",
-    details: "10₺/kg",
-    price: "200₺",
-    estimatedDate: "Teslim Tarihi: 24/11/2024",
-    images: [
-      "https://picsum.photos/300/200?random=4",
-      "https://picsum.photos/300/200?random=5",
-      "https://picsum.photos/300/200?random=6",
-    ],
-    icon: null,
-  },
-];
-
 const SaleProduct = () => {
+  const [sales, setSales] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { user } = useUser(); // Kullanıcıdan token alınır
+  const token = user?.token;
 
-  const totalPrice = saleItems.reduce(
-    (sum, item) => sum + parseInt(item.price.replace("₺", "")),
-    0
-  );
+  useEffect(() => {
+    const fetchSales = async () => {
+      if (!token) {
+        message.error("Lütfen giriş yapın.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          "https://farmtwomarket.com/api/Cart/GetSoldOrders",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.status === 200 && Array.isArray(response.data)) {
+          setSales(response.data);
+        } else {
+          message.error("Satış verileri yüklenemedi.");
+        }
+      } catch (error) {
+        console.error("API Hatası:", error.response?.data || error.message);
+        message.error("Satış verilerini çekerken bir hata oluştu.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSales();
+  }, [token]);
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (sales.length === 0) {
+    return (
+      <div style={{ padding: "16px", textAlign: "center" }}>
+        <Button type="link" onClick={() => navigate("/mainPage")}>
+          ← Ana Sayfa
+        </Button>
+        <Card title={<Text strong>Satış Yapılan Ürünler</Text>} bordered>
+          <Text>Henüz satış yapılmış bir ürün bulunmamaktadır.</Text>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: "16px", maxWidth: "900px", margin: "0 auto" }}>
@@ -53,45 +78,35 @@ const SaleProduct = () => {
         style={{ marginTop: "16px" }}
       >
         <Row gutter={[16, 16]}>
-          {saleItems.map((item) => (
-            <Col key={item.id} span={24}>
+          {sales.map((sale) => (
+            <Col key={sale.orderId} span={24}>
               <Card bordered bodyStyle={{ textAlign: "left" }}>
                 <div>
-                  <Text strong>{item.title}</Text>
+                  <Text strong>Sipariş Tarihi: </Text>{" "}
+                  {new Date(sale.orderDate).toLocaleDateString()}
                 </div>
-                <div>{item.details}</div>
                 <div>
-                  <Text strong>{item.price}</Text>
+                  <Text strong>Market: </Text> {sale.marketReceiverName}
                 </div>
-                <div>{item.estimatedDate}</div>
 
-                {/* Display images side by side */}
-                <Row gutter={[8, 8]} style={{ marginTop: "8px" }}>
-                  {item.images.map((image, index) => (
-                    <Col key={index} span={8}>
-                      <img
-                        alt={`${item.title}-${index}`}
-                        src={image}
-                        style={{
-                          width: "100%",
-                          height: "auto",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </Col>
+                <div style={{ marginTop: "16px" }}>
+                  <Text strong>Ürünler:</Text>
+                  {sale.products.map((product, index) => (
+                    <div
+                      key={index}
+                      style={{ marginTop: "8px", paddingLeft: "16px" }}
+                    >
+                      <Text>
+                        {product.name} - {product.quantity} adet -{" "}
+                        {(product.price * product.quantity).toFixed(2)}₺
+                      </Text>
+                    </div>
                   ))}
-                </Row>
-
-                {item.icon && (
-                  <div style={{ marginTop: "8px" }}>{item.icon}</div>
-                )}
+                </div>
               </Card>
             </Col>
           ))}
         </Row>
-        <div style={{ marginTop: "16px", textAlign: "right" }}>
-          <Text strong>Toplam Satış: {totalPrice}₺</Text>
-        </div>
       </Card>
     </div>
   );
