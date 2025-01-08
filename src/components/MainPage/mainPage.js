@@ -1,24 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Input, Row, Col, Button, Drawer, List, Modal, Spin } from "antd";
+import { Row, Col, Button, Drawer, Modal, Spin, List } from "antd";
 import {
   MenuOutlined,
   ShoppingCartOutlined,
   HeartOutlined,
   UserOutlined,
-  InfoCircleOutlined,
-  DollarOutlined,
-  TagOutlined,
-  ShoppingOutlined,
-  LogoutOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import f2myazı from "../../images/f2myazı.png";
 import "./MainPage.css";
 import CategoryCarousel from "./categoryCarousel";
 import ProductGrid from "./productGrid";
-import FooterComponent from "../footercomponent";
+import FooterComponent from "./footercomponent";
 import { useUser } from "../Context/UserContext";
-import UrunEkleForm from "./ProductAdd/productAdd";
+import UrunEkleForm from "./RoleFarmer/productAdd";
+import UserOptions from "./UserOptions";
 import axios from "axios";
 
 function MainPage() {
@@ -28,18 +24,19 @@ function MainPage() {
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [userDrawerVisible, setUserDrawerVisible] = useState(false);
   const [urunEkleVisible, setUrunEkleVisible] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [categories, setCategories] = useState([]); // Kategoriler için state
-  const [loading, setLoading] = useState(true); // Yükleme durumu
+  const [selectedCategory, setSelectedCategory] = useState(null); // Seçilen kategori
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState([]); // Ürünlerin state'i
+  const [error, setError] = useState(null); // Hatalar için state
 
   useEffect(() => {
-    // Kategorileri API'den çek
     const fetchCategories = async () => {
       try {
         const response = await axios.get(
           "https://farmtwomarket.com/api/Product/GetCategory"
         );
-        setCategories(response.data.map((category) => category.name)); // Sadece isimleri al
+        setCategories(response.data);
         setLoading(false);
       } catch (error) {
         console.error("Kategoriler yüklenirken bir hata oluştu:", error);
@@ -48,154 +45,67 @@ function MainPage() {
     };
     fetchCategories();
   }, []);
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        "https://farmtwomarket.com/api/Product/GetProducts"
+      );
+      if (response.status === 200) {
+        // Eğer bir kategori seçildiyse ürünleri ön tarafta filtrele
+        const filteredProducts = selectedCategory
+          ? response.data.filter(
+              (product) => product.categoryId === selectedCategory
+            )
+          : response.data;
+
+        setProducts(filteredProducts);
+      } else {
+        setError("Ürünler alınırken bir hata oluştu.");
+      }
+    } catch (error) {
+      setError("Ürünler alınırken bir hata oluştu.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const showDrawer = () => setDrawerVisible(true);
   const onClose = () => setDrawerVisible(false);
   const showUserDrawer = () => setUserDrawerVisible(true);
   const onUserDrawerClose = () => setUserDrawerVisible(false);
-
-  // Ürün Ekleme
   const showUrunEkle = () => setUrunEkleVisible(true);
   const onUrunEkleClose = () => setUrunEkleVisible(false);
-
-  let userOptions = [
-    {
-      label: user ? user.userName : "Giriş Yap",
-      action: () => navigate(user ? "/profile" : "/login"),
-      icon: <UserOutlined />,
-    },
-  ];
-
-  if (user) {
-    if (user.userRole === "Farmer") {
-      userOptions = [
-        ...userOptions,
-        {
-          label: "Hesap Bilgileri",
-          icon: <UserOutlined />,
-          action: () => navigate("/account"),
-        },
-
-        {
-          label: "Ürün Ekle",
-          icon: <TagOutlined />,
-          action: () => navigate("/addProduct"),
-        },
-        {
-          label: "Satışlarım",
-          icon: <TagOutlined />,
-          action: () => navigate("/farmersatislarim"),
-        },
-        {
-          label: "Ürünlerim",
-          icon: <ShoppingOutlined />,
-          action: () => navigate("/farmerurunler"),
-        },
-        {
-          label: "Farm2Market Müşteri Hizmetleri",
-          icon: <InfoCircleOutlined />,
-          action: () => navigate("/customerservice"),
-        },
-        {
-          label: "Bizi Tanıyın",
-          icon: <InfoCircleOutlined />,
-          action: () => navigate("/iletisim"),
-        },
-      ];
-    } else if (user.userRole === "MarketReceiver") {
-      userOptions = [
-        ...userOptions,
-        {
-          label: "Hesap Bilgileri",
-          icon: <UserOutlined />,
-          action: () => navigate("/account"),
-        },
-
-        {
-          label: "Alışlarım",
-          icon: <DollarOutlined />,
-          action: () => navigate("/marketalislarim"),
-        },
-        {
-          label: "Farm2Market Müşteri Hizmetleri",
-          icon: <InfoCircleOutlined />,
-          action: () => navigate("/customerservice"),
-        },
-        {
-          label: "Bizi Tanıyın",
-          icon: <InfoCircleOutlined />,
-          action: () => navigate("/iletisim"),
-        },
-      ];
-    }
-  } else {
-    userOptions = [
-      ...userOptions,
-      {
-        label: "Farm2Market Müşteri Hizmetleri",
-        icon: <InfoCircleOutlined />,
-        action: () => navigate("/customerservice"),
-      },
-
-      {
-        label: "Bizi Tanıyın",
-        icon: <InfoCircleOutlined />,
-        action: () => navigate("/iletisim"),
-      },
-      {
-        label: "Gizlilik Politikası",
-        icon: <InfoCircleOutlined />,
-        action: () => navigate("/privacypolicy"),
-      },
-    ];
-  }
-
-  userOptions.push({
-    label: "Çıkış Yap",
-    action: () => {
-      setUser(null);
-      onUserDrawerClose();
-    },
-    icon: <LogoutOutlined />,
-  });
   const handleCategorySelect = (categoryId) => {
-    setSelectedCategory(categoryId); // Kategori seçildiğinde bu değer değişir.
+    setSelectedCategory(categoryId); // Seçilen kategoriyi güncelle
   };
 
   return (
     <div className="main-page-container">
       <Row align="middle" justify="space-between" className="main-page-header">
-        {/* Sol taraftaki Menü İkonu */}
         <Col>
           <Button type="text" icon={<MenuOutlined />} onClick={showDrawer} />
         </Col>
-
-        {/* Ortadaki Başlık */}
         <Col>
           <img src={f2myazı} alt="Logo" className="logo-image" />
         </Col>
-
-        {/* Sağdaki İkonlar */}
         <Col>
-          {/* Sepet İkonu - Farmer haricinde kullanıcılar için */}
-          {(!user || user.userRole !== "Farmer") && (
-            <Button
-              type="text"
-              icon={<ShoppingCartOutlined />}
-              onClick={() => navigate("/page-sepet")}
-            />
+          {(!user ||
+            (user.userRole !== "Farmer" && user.userRole !== "Admin")) && (
+            <>
+              <Button
+                type="text"
+                icon={<ShoppingCartOutlined />}
+                onClick={() => navigate("/page-sepet")}
+              />
+              <Button
+                type="text"
+                icon={<HeartOutlined />}
+                onClick={() => navigate("/page-favori")}
+              />
+            </>
           )}
-
-          {/* Favori İkonu - Farmer haricinde kullanıcılar için */}
-          {(!user || user.userRole !== "Farmer") && (
-            <Button
-              type="text"
-              icon={<HeartOutlined />}
-              onClick={() => navigate("/page-favori")}
-            />
-          )}
-
-          {/* Kullanıcı İkonu */}
           <Button
             type="text"
             icon={<UserOutlined />}
@@ -203,16 +113,11 @@ function MainPage() {
           />
         </Col>
       </Row>
-
-      {/* Kategoriler Carousel'i */}
       <CategoryCarousel onCategorySelect={handleCategorySelect} />
-
       <div>
         <ProductGrid selectedCategory={selectedCategory} />
       </div>
       <FooterComponent />
-
-      {/* Menü Drawer */}
       <Drawer
         title="Kategoriler"
         placement="left"
@@ -220,39 +125,31 @@ function MainPage() {
         visible={drawerVisible}
       >
         {loading ? (
-          <Spin /> // Yükleniyor göstergesi
+          <Spin />
         ) : (
           <List
             dataSource={categories}
             renderItem={(item) => (
               <List.Item>
-                <Button type="link" style={{ padding: 0 }}>
-                  {item}
+                <Button
+                  type="link"
+                  style={{ padding: 0 }}
+                  onClick={() => handleCategorySelect(item.id)}
+                >
+                  {item.name}
                 </Button>
               </List.Item>
             )}
           />
         )}
       </Drawer>
-
-      {/* User Drawer Seçenek */}
       <Drawer
         title="Kullanıcı Seçenekleri"
         placement="right"
         onClose={onUserDrawerClose}
         visible={userDrawerVisible}
       >
-        <List
-          dataSource={userOptions}
-          renderItem={({ label, action, icon }) => (
-            <List.Item>
-              <Button type="link" style={{ padding: 0 }} onClick={action}>
-                {icon}
-                <span style={{ marginLeft: 8 }}>{label}</span>
-              </Button>
-            </List.Item>
-          )}
-        />
+        <UserOptions user={user} setUser={setUser} />
       </Drawer>
       <Modal
         title="Ürün Ekle"

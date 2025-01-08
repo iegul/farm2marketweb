@@ -1,15 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Carousel, Row, Col, Button, Spin } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import "./CategoryCarousel.css"; // CSS dosyasını ekledik
 import axios from "axios";
+import "./CategoryCarousel.css";
 
 function CategoryCarousel({ onCategorySelect }) {
   const carouselRef = useRef();
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true); // Yükleme durumu için state
+  const [loading, setLoading] = useState(true);
 
-  // API'den kategorileri çek
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -26,15 +25,9 @@ function CategoryCarousel({ onCategorySelect }) {
     fetchCategories();
   }, []);
 
-  const next = () => {
-    carouselRef.current.next();
-  };
+  const next = () => carouselRef.current.next();
+  const prev = () => carouselRef.current.prev();
 
-  const prev = () => {
-    carouselRef.current.prev();
-  };
-
-  // Kategorileri 3'lü gruplara bölecek bir fonksiyon
   const chunkArray = (array, chunkSize) => {
     const chunks = [];
     for (let i = 0; i < array.length; i += chunkSize) {
@@ -43,10 +36,18 @@ function CategoryCarousel({ onCategorySelect }) {
     return chunks;
   };
 
-  // Verileri yüklüyorsak yükleme animasyonu göster
+  const handleCategoryClick = (categoryId) => {
+    onCategorySelect(categoryId); // Parent bileşene kategori id'sini gönder.
+  };
+
   if (loading) {
     return (
-      <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <div
+        style={{
+          textAlign: "center",
+          marginTop: "50px",
+        }}
+      >
         <Spin size="large" />
       </div>
     );
@@ -54,7 +55,6 @@ function CategoryCarousel({ onCategorySelect }) {
 
   return (
     <div className="carousel-container">
-      {/* Ok butonları */}
       <Button
         icon={<LeftOutlined />}
         onClick={prev}
@@ -66,7 +66,6 @@ function CategoryCarousel({ onCategorySelect }) {
         className="carousel-arrow carousel-arrow-right"
       />
 
-      {/* Kategoriler */}
       <Carousel dots={false} ref={carouselRef}>
         {chunkArray(categories, 3).map((chunk, index) => (
           <div key={index}>
@@ -76,7 +75,7 @@ function CategoryCarousel({ onCategorySelect }) {
                   <div className="carousel-card">
                     <Button
                       type="link"
-                      onClick={() => onCategorySelect(category.id)}
+                      onClick={() => handleCategoryClick(category.id)}
                     >
                       {category.name}
                     </Button>

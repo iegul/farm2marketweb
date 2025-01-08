@@ -1,23 +1,26 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import LogoPage from "../components/logopage";
-
+import LogoPage from "../components/MainPage/logopage";
 import MainPage from "../components/MainPage/mainPage";
 import LoginPage from "../components/LoginRegister/loginPage";
 import RegisterPage from "../components/LoginRegister/registerPage";
-import PageSepet from "../components/PageSepet/PageSepet";
-import PageFavorite from "../components/PageFavori/PageFavori";
+import PageSepet from "../components/MainPage/PageCart/PageSepet";
+import PageFavorite from "../components/MainPage/PageFavori/PageFavori";
 import ConfirmMailPage from "../components/LoginRegister/ConfirmEmailPage";
-import UrunEkleForm from "../components/MainPage/ProductAdd/productAdd";
-import SaleProduct from "../components/MainPage/FarmerSaleProduct/saleProduct";
-import BuyProduct from "../components/MainPage/MarketBuyProduct/buyProduct";
-import FarmerByProduct from "../components/MainPage/FarmerSaleProduct/farmerByProduct";
+import UrunEkleForm from "../components/MainPage/RoleFarmer/productAdd";
+import SaleProduct from "../components/MainPage/RoleFarmer/saleProduct";
+import BuyProduct from "../components/MainPage/RoleMarket/buyProduct";
+import FarmerByProduct from "../components/MainPage/RoleFarmer/farmerByProduct";
 import ProductDetailShow from "../components/MainPage/productDetailShow";
 import Contact from "../components/MainPage/Drawer/contect";
 import CustomerService from "../components/MainPage/Drawer/customerservice";
 import PrivacyPolicy from "../components/MainPage/Drawer/privacypolicy";
 import AccountPage from "../components/MainPage/Drawer/accountPage";
-import OrderSummary from "../components/PageSepet/OrderSummary";
+import OrderSummary from "../components/MainPage/PageCart/OrderSummary";
+import ChangePassword from "../components/MainPage/Drawer/ChangePassword";
+import AddCategory from "../components/MainPage/RoleAdmin/AddCategory";
+import ProductList from "../components/MainPage/RoleAdmin/ProductList";
+import UserList from "../components/MainPage/RoleAdmin/UserList";
 
 function AppRouter() {
   return (
@@ -28,10 +31,7 @@ function AppRouter() {
       <Route path="/mainPage" element={<MainPage />} />
       <Route path="/addProduct" element={<UrunEkleForm />} />
       <Route path="/page-sepet" element={<PageSepet></PageSepet>}></Route>
-      <Route
-        path="/page-favori"
-        element={<PageFavorite></PageFavorite>}
-      ></Route>
+      <Route path="/page-favori" element={<PageFavorite></PageFavorite>} />
       <Route path="/product-detail/:id" element={<ProductDetailShow />} />
       <Route path="/confirm-mail" element={<ConfirmMailPage />} />
       <Route path="/urun-ekle" element={<UrunEkleForm />} />
@@ -42,9 +42,12 @@ function AppRouter() {
       <Route path="/customerservice" element={<CustomerService />}></Route>
       <Route path="/privacypolicy" element={<PrivacyPolicy />}></Route>
       <Route path="/account" element={<AccountPage />}></Route>
+      <Route path="/passwordchange" element={<ChangePassword />} />
       <Route path="/ordersummary" element={<OrderSummary />} />
+      <Route path="/addcatagory" element={<AddCategory />} />
+      <Route path="/productList" element={<ProductList />} />
+      <Route path="/userList" element={<UserList />} />
     </Routes>
   );
 }
-
 export default AppRouter;

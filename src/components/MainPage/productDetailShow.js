@@ -3,8 +3,7 @@ import { Card, Button, Col, Row, Carousel, InputNumber, message } from "antd";
 import { HeartOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useCart } from "../Context/CartContext";
-import FooterComponent from "../footercomponent";
+import FooterComponent from "./footercomponent";
 import { useUser } from "../Context/UserContext";
 
 const formatBase64 = (base64String) => {
@@ -24,7 +23,7 @@ function ProductDetailShow() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1); // Default quantity
-  const { addToCart } = useCart(); // Sepet yönetimi için context
+
   const { user } = useUser();
   const token = user?.token;
 
@@ -145,19 +144,6 @@ function ProductDetailShow() {
 
   return (
     <div style={{ padding: "20px" }}>
-      <Button
-        icon={<ArrowLeftOutlined />}
-        style={{
-          marginBottom: "20px",
-          backgroundColor: "#342E20",
-          color: "#fff",
-          border: "none",
-        }}
-        onClick={() => navigate("/mainPage")}
-      >
-        Geri
-      </Button>
-
       <div
         style={{
           maxWidth: "800px",

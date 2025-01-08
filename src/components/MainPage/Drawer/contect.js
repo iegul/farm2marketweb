@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Avatar, Space, Button } from "antd";
+import { Card, Avatar, Space } from "antd";
 import {
   InstagramOutlined,
   LinkedinOutlined,
@@ -11,7 +11,6 @@ import ecemImage from "../../../images/Ecem.jpg";
 import edaImage from "../../../images/eda.jpg";
 import barisImage from "../../../images/baris.jpg";
 import cemHocaImage from "../../../images/cemhoca.png";
-import { Link } from "react-router-dom";
 
 const { Meta } = Card;
 
@@ -19,8 +18,8 @@ function Contact() {
   const profiles = [
     {
       name: "Cem Taşkın",
-      title: "Project manager",
-      skills: "Her masada var",
+      title: "Dr. Öğretim Üyesi",
+      skills: "Project Manager",
       experience: "Çok yıllık deneyim",
       image: cemHocaImage,
       socialLinks: {
@@ -31,7 +30,7 @@ function Contact() {
     {
       name: "İrem Elif Gül",
       title: "Frontend Developer",
-      skills: "React",
+      skills: "ReactJS",
       experience: "1 yıla yakın deneyim",
       image: iremImage,
       socialLinks: {
@@ -80,24 +79,6 @@ function Contact() {
 
   return (
     <div style={{ padding: "20px" }}>
-      <div style={{ marginBottom: "20px" }}>
-        <Link to="/mainPage">
-          <Button
-            type="primary"
-            icon={<ArrowLeftOutlined />}
-            style={{
-              backgroundColor: "#FFFFFF",
-              color: "#000000",
-              width: "50px",
-              height: "50px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          />
-        </Link>
-      </div>
-
       <Space direction="vertical" size={16} style={{ width: "100%" }}>
         {profiles.map((profile, index) => (
           <Card

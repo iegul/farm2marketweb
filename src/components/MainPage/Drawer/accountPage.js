@@ -9,42 +9,95 @@ const { Title } = Typography;
 const AccountPage = () => {
   const { user, setUser } = useUser();
   const navigate = useNavigate();
-
   const [loading, setLoading] = useState(false);
+  const [profileData, setProfileData] = useState(null);
 
-  // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
   useEffect(() => {
     if (!user) {
       message.warning("Lütfen giriş yapınız.");
       navigate("/login");
+      return;
     }
+
+    const fetchProfile = async () => {
+      setLoading(true);
+      try {
+        let url = "";
+        if (user.userRole === "Farmer") {
+          url = "https://farmtwomarket.com/api/Auth/GetFarmerProfile";
+        } else if (user.userRole === "MarketReceiver") {
+          url = "https://farmtwomarket.com/api/Auth/GetMarketProfile";
+        }
+
+        if (url) {
+          const response = await axios.get(url, {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          });
+
+          if (response.status === 200) {
+            setProfileData(response.data);
+          } else {
+            message.error("Profil bilgileri alınamadı.");
+          }
+        }
+      } catch (error) {
+        message.error("Bir hata oluştu: " + error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
   }, [user, navigate]);
 
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      // Kullanıcı bilgilerini güncellemek için API çağrısı
-      const response = await axios.put(
-        "https://farmtwomarket.com/api/User/UpdateUser",
-        {
-          userId: user.userId,
-          ...values,
-        }
-      );
+      let url = "";
+      const updatedData = {
+        firstName: values.name,
+        lastName: values.lastname,
+        userName: values.username,
+        email: values.email,
+        adress: values.address,
+      };
 
-      // Başarı mesajı ve kullanıcı bilgisinin güncellenmesi
-      if (response.status === 200) {
-        message.success("Bilgileriniz başarıyla güncellendi.");
-        setUser({ ...user, ...values });
-      } else {
-        message.error("Bilgiler güncellenemedi, lütfen tekrar deneyiniz.");
+      if (user.userRole === "Farmer") {
+        url = "https://farmtwomarket.com/api/Auth/UpdateFarmerProfile";
+      } else if (user.userRole === "MarketReceiver") {
+        url = "https://farmtwomarket.com/api/Auth/UpdateMarketProfile";
+        updatedData.marketName = values.marketName;
+        updatedData.companyType = values.companyType;
+      }
+
+      if (url) {
+        const response = await axios.put(url, updatedData, {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
+
+        if (response.status === 200) {
+          message.success("Profil başarıyla güncellendi.");
+          setUser({ ...user, ...updatedData }); // Kullanıcı bilgisini güncelle
+        } else {
+          message.error("Profil güncellenemedi. Lütfen tekrar deneyiniz.");
+        }
       }
     } catch (error) {
-      message.error("Bir hata oluştu: " + error.message);
+      message.error(
+        "Bir hata oluştu: " + error.response?.data?.message || error.message
+      );
     } finally {
       setLoading(false);
     }
   };
+
+  if (!profileData) {
+    return <div>Yükleniyor...</div>;
+  }
 
   return (
     <div style={{ maxWidth: 600, margin: "50px auto", padding: "20px" }}>
@@ -55,9 +108,15 @@ const AccountPage = () => {
         name="accountForm"
         layout="vertical"
         initialValues={{
-          name: user?.name,
-          email: user?.email,
-          password: "",
+          name: profileData.firstName,
+          lastname: profileData.lastName,
+          username: profileData.userName,
+          email: profileData.email,
+          address: profileData.adress,
+          ...(user.userRole === "MarketReceiver" && {
+            marketName: profileData.marketName,
+            companyType: profileData.companyType,
+          }),
         }}
         onFinish={onFinish}
       >
@@ -68,7 +127,20 @@ const AccountPage = () => {
         >
           <Input placeholder="Adınız" />
         </Form.Item>
-
+        <Form.Item
+          label="Soyad"
+          name="lastname"
+          rules={[{ required: true, message: "Soyadınızı giriniz!" }]}
+        >
+          <Input placeholder="Soyadınız" />
+        </Form.Item>
+        <Form.Item
+          label="Kullanıcı Adı"
+          name="username"
+          rules={[{ required: true, message: "Kullanıcı adınızı giriniz!" }]}
+        >
+          <Input placeholder="Kullanıcı Adı" />
+        </Form.Item>
         <Form.Item
           label="E-posta"
           name="email"
@@ -79,17 +151,32 @@ const AccountPage = () => {
         >
           <Input placeholder="E-posta adresiniz" />
         </Form.Item>
-
         <Form.Item
-          label="Şifre"
-          name="password"
-          rules={[
-            { required: true, message: "Şifrenizi giriniz!" },
-            { min: 6, message: "Şifreniz en az 6 karakter olmalıdır!" },
-          ]}
+          label="Adres"
+          name="address"
+          rules={[{ required: true, message: "Adresinizi giriniz!" }]}
         >
-          <Input.Password placeholder="Yeni şifreniz" />
+          <Input placeholder="Adresiniz" />
         </Form.Item>
+
+        {user.userRole === "MarketReceiver" && (
+          <>
+            <Form.Item
+              label="Market Adı"
+              name="marketName"
+              rules={[{ required: true, message: "Market adını giriniz!" }]}
+            >
+              <Input placeholder="Market adı" />
+            </Form.Item>
+            <Form.Item
+              label="Şirket Türü"
+              name="companyType"
+              rules={[{ required: true, message: "Şirket türünü giriniz!" }]}
+            >
+              <Input placeholder="Şirket türü" />
+            </Form.Item>
+          </>
+        )}
 
         <Form.Item>
           <Button type="primary" htmlType="submit" block loading={loading}>
