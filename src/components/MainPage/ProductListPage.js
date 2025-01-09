@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Row, Col, Card, Spin, Input, Carousel, Button } from "antd";
-import { HeartOutlined, HeartFilled } from "@ant-design/icons";
+import { HeartOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { useUser } from "../../components/Context/UserContext";
 
 const formatBase64 = (base64String) => {
   if (!base64String || base64String.trim() === "") {
@@ -16,6 +17,8 @@ const formatBase64 = (base64String) => {
 
 function ProductListPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useUser(); // Kullanıcı bilgisi
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,6 +63,10 @@ function ProductListPage() {
     setFilteredProducts(filtered);
   };
 
+  const handleCardClick = (productId) => {
+    navigate(`/product-detail/${productId}`); // Ürün detay sayfasına yönlendirme
+  };
+
   return (
     <div style={{ padding: "20px" }}>
       <h1>Kategoriye Ait Ürünler</h1>
@@ -84,6 +91,7 @@ function ProductListPage() {
               <Card
                 hoverable
                 style={{ width: "100%" }}
+                onClick={() => handleCardClick(product.id)} // Kart tıklamasıyla yönlendirme
                 cover={
                   <Carousel autoplay style={{ height: "150px" }}>
                     <div>
@@ -138,14 +146,17 @@ function ProductListPage() {
                   <h3 style={{ margin: 0, fontSize: "16px" }}>
                     {product.name}
                   </h3>
-                  <Button
-                    type="text"
-                    icon={
-                      <HeartOutlined
-                        style={{ fontSize: "20px", color: "#f5222d" }}
-                      />
-                    }
-                  />
+                  {user?.userRole === "MarketReceiver" && (
+                    <Button
+                      type="text"
+                      icon={
+                        <HeartOutlined
+                          style={{ fontSize: "20px", color: "#f5222d" }}
+                        />
+                      }
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  )}
                 </div>
 
                 <p style={{ margin: 0, fontSize: "14px", color: "#333" }}>
