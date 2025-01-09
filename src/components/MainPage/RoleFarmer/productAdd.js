@@ -94,8 +94,8 @@ const UrunEkleForm = () => {
 
       if (response.data.succeeded) {
         message.success("Ürün başarıyla eklendi!");
-        setImages([]); // Yüklenen görselleri temizle
-        setTimeout(() => navigate("/mainPage"), 500); // Ana sayfaya yönlendir
+        setImages([]);
+        setTimeout(() => navigate("/mainPage"), 500);
       } else {
         throw new Error(
           response.data.error || "Ürün eklenirken bir hata oluştu."

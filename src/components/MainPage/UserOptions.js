@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 
 const UserOptions = ({ user, setUser }) => {
   const navigate = useNavigate();
-  const [accountInfoVisible, setAccountInfoVisible] = useState(false); // State to toggle sub-options
+  const [accountInfoVisible, setAccountInfoVisible] = useState(false);
 
   let userOptions = [
     {
@@ -34,7 +34,7 @@ const UserOptions = ({ user, setUser }) => {
         {
           label: "Hesap Bilgileri",
           icon: <ProfileOutlined />,
-          action: () => setAccountInfoVisible(!accountInfoVisible), // Toggle sub-options visibility
+          action: () => setAccountInfoVisible(!accountInfoVisible),
         },
         {
           label: "Ürün Ekle",
@@ -73,7 +73,7 @@ const UserOptions = ({ user, setUser }) => {
         {
           label: "Hesap Bilgileri",
           icon: <ProfileOutlined />,
-          action: () => setAccountInfoVisible(!accountInfoVisible), // Toggle sub-options visibility
+          action: () => setAccountInfoVisible(!accountInfoVisible),
         },
         {
           label: "Siparişlerim",
@@ -152,7 +152,7 @@ const UserOptions = ({ user, setUser }) => {
         <List.Item>
           <Button
             type="link"
-            style={{ padding: 0, color: "green" }} // Renk burada yeşil olarak ayarlandı
+            style={{ padding: 0, color: "green" }}
             onClick={action}
           >
             {icon}
@@ -176,7 +176,7 @@ const UserOptions = ({ user, setUser }) => {
                 <List.Item>
                   <Button
                     type="link"
-                    style={{ padding: 0, color: "#3D692A" }} // Alt seçeneklerin rengi de yeşil yapıldı
+                    style={{ padding: 0, color: "#3D692A" }}
                     onClick={action}
                   >
                     <span style={{ marginLeft: 8 }}>{label}</span>

@@ -134,7 +134,7 @@ const AccountPage = () => {
           }),
         }}
         onFinish={onFinish}
-        colon={false} // Yıldızları kaldırmak için
+        colon={false}
       >
         <Form.Item
           label="Ad"

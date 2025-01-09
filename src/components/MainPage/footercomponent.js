@@ -54,7 +54,6 @@ const FooterComponent = () => {
           </div>
         </Col>
 
-        {/* Orta Kısım - Şirket Bilgileri */}
         <Col xs={24} md={8}>
           <h3 style={{ color: "#342E20", marginBottom: "10px" }}>Biz Kimiz?</h3>
           <p style={{ margin: 0, color: "#342E20" }}>
@@ -66,7 +65,6 @@ const FooterComponent = () => {
           </p>
         </Col>
 
-        {/* Sağ Kısım - İletişim Butonu */}
         <Col xs={24} md={8} style={{ textAlign: "right" }}>
           <Button
             type="primary"

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, Modal, Form, Input, message } from "antd";
 import axios from "axios";
-import { useUser } from "../../Context/UserContext"; // Token bilgisi için
+import { useUser } from "../../Context/UserContext";
 
 const AddCategory = () => {
   const [categories, setCategories] = useState([]);
@@ -9,10 +9,9 @@ const AddCategory = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
 
-  const { user } = useUser(); // Kullanıcıdan token alınır
+  const { user } = useUser();
   const token = user?.token;
 
-  // Kategorileri API'den çekme
   const fetchCategories = async () => {
     setLoading(true);
     try {
@@ -31,7 +30,6 @@ const AddCategory = () => {
     fetchCategories();
   }, []);
 
-  // Yeni kategori ekleme
   const addCategory = async (values) => {
     if (!token) {
       message.error("Lütfen giriş yapın. Token bulunamadı.");
@@ -51,7 +49,7 @@ const AddCategory = () => {
 
       if (response.status === 200) {
         message.success("Kategori başarıyla eklendi!");
-        fetchCategories(); // Listeyi yenile
+        fetchCategories();
         setIsModalOpen(false);
         form.resetFields();
       } else {
@@ -71,7 +69,6 @@ const AddCategory = () => {
     }
   };
 
-  // Modalı aç/kapat
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -81,7 +78,6 @@ const AddCategory = () => {
     form.resetFields();
   };
 
-  // Tablo sütunları
   const columns = [
     {
       title: "Kategori ID",

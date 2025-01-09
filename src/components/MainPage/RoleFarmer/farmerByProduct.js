@@ -16,7 +16,6 @@ const FarmerByProduct = () => {
   const [updatingProduct, setUpdatingProduct] = useState(null);
   const [updateFields, setUpdateFields] = useState({});
 
-  // Ürünleri getiren yardımcı fonksiyon
   const fetchFarmerProducts = async () => {
     try {
       const token = user.token;
@@ -50,7 +49,6 @@ const FarmerByProduct = () => {
     }
   };
 
-  // Bileşen yüklendiğinde ürünleri getir
   useEffect(() => {
     fetchFarmerProducts();
   }, []);
@@ -78,10 +76,9 @@ const FarmerByProduct = () => {
       if (response.status === 200) {
         message.success("Ürün başarıyla güncellendi!");
 
-        // Ürünleri güncelle
         await fetchFarmerProducts();
 
-        setUpdatingProduct(null); // Güncelleme modali kapat
+        setUpdatingProduct(null);
       }
     } catch (error) {
       console.error("API Response Error:", error.response);
@@ -108,7 +105,6 @@ const FarmerByProduct = () => {
         }
       );
 
-      // Silinen ürünü listeden kaldır
       setProducts((prevProducts) =>
         prevProducts.filter((product) => product.id !== productId)
       );
@@ -122,7 +118,7 @@ const FarmerByProduct = () => {
 
   const openUpdateModal = (product) => {
     setUpdatingProduct(product);
-    setUpdateFields(product); // Modal için mevcut ürün bilgilerini set et
+    setUpdateFields(product);
   };
 
   if (loading) {

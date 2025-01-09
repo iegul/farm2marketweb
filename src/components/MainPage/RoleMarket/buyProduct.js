@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Button, Typography, message, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useUser } from "../../Context/UserContext"; // Token için
+import { useUser } from "../../Context/UserContext";
 
 const { Text } = Typography;
 
@@ -10,7 +10,7 @@ const BuyProduct = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { user } = useUser(); // Kullanıcıdan token alınır
+  const { user } = useUser();
   const token = user?.token;
 
   useEffect(() => {

@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 const { Title } = Typography;
 
 const ChangePassword = () => {
-  const { user } = useUser(); // Kullanıcı bilgisini almak için context
+  const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -22,7 +22,7 @@ const ChangePassword = () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${user?.token}`, // Kullanıcının token bilgisini ekle
+            Authorization: `Bearer ${user?.token}`,
           },
         }
       );
@@ -61,7 +61,7 @@ const ChangePassword = () => {
         layout="vertical"
         onFinish={onFinish}
         autoComplete="off"
-        colon={false} // * işaretlerini kaldırır
+        colon={false}
       >
         <Form.Item
           label="Mevcut Şifre"

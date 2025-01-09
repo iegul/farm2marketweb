@@ -17,14 +17,13 @@ const UpdateProductModal = ({
   visible,
   onCancel,
   onOk,
-  images = [], // Ensure images is always an array
+  images = [],
   setImages,
   updateFields,
   setUpdateFields,
 }) => {
   const [categories, setCategories] = useState([]);
 
-  // Fetch categories when the component mounts
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -41,7 +40,6 @@ const UpdateProductModal = ({
     fetchCategories();
   }, []);
 
-  // Handle input changes
   const handleInputChange = (field, value) => {
     setUpdateFields((prevFields) => ({
       ...prevFields,
@@ -49,17 +47,15 @@ const UpdateProductModal = ({
     }));
   };
 
-  // Handle removing images
   const handleImageRemove = async (index) => {
     const imageFields = ["image1", "image2", "image3"];
     if (index < imageFields.length) {
       const fieldToClear = imageFields[index];
 
       try {
-        // Set the image field to a single space " " (to comply with API requirements)
         setUpdateFields((prevFields) => ({
           ...prevFields,
-          [fieldToClear]: " ", // Assign a single space instead of empty string
+          [fieldToClear]: " ",
         }));
         message.success(`Resim ${index + 1} kaldırıldı.`);
       } catch (error) {
@@ -69,31 +65,27 @@ const UpdateProductModal = ({
     }
   };
 
-  // Handle image upload
   const handleImageUpload = (file) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64Image = reader.result.split(",")[1];
       const imageFields = ["image1", "image2", "image3"];
-
-      // Find the first empty image slot
       for (let i = 0; i < imageFields.length; i++) {
         if (!updateFields[imageFields[i]]) {
           setUpdateFields((prevFields) => ({
             ...prevFields,
             [imageFields[i]]: base64Image,
           }));
-          return; // Exit loop after updating
+          return;
         }
       }
 
       message.error("Maksimum 3 resim eklenebilir.");
     };
     reader.readAsDataURL(file);
-    return false; // Prevent default upload behavior
+    return false;
   };
 
-  // Render images
   const renderImages = () => {
     const productImages = [
       updateFields.image1,
@@ -102,7 +94,7 @@ const UpdateProductModal = ({
     ];
 
     return productImages.map((base64Image, index) => {
-      if (!base64Image) return null; // Skip empty images
+      if (!base64Image) return null;
 
       const imageUrl = `data:image/jpeg;base64,${base64Image}`;
       return (
@@ -147,7 +139,7 @@ const UpdateProductModal = ({
       );
       if (response.status === 200) {
         message.success("Ürün başarıyla güncellendi!");
-        onOk(); // Close the modal
+        onOk();
       } else {
         message.error("Ürün güncellenirken bir hata oluştu.");
       }
@@ -269,9 +261,9 @@ const UpdateProductModal = ({
       </div>
       <Upload
         beforeUpload={(file) => {
-          const index = images.length; // Calculate the image index
-          handleImageUpload(file, `image${index + 1}`); // Pass the correct image index
-          return false; // Prevent default upload behavior
+          const index = images.length;
+          handleImageUpload(file, `image${index + 1}`);
+          return false;
         }}
         showUploadList={false}
       >

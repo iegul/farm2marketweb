@@ -20,7 +20,7 @@ function LogoPage() {
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",
-        padding: "1rem", // kenarlardan biraz boşluk bırakır
+        padding: "1rem",
       }}
     >
       <style>
@@ -35,8 +35,8 @@ function LogoPage() {
         src={f2mImage}
         alt="Logo"
         style={{
-          maxWidth: "80%", // daha küçük hale getirilmiş
-          maxHeight: "80vh", // dikey olarak ekran boyutuna uygun
+          maxWidth: "80%",
+          maxHeight: "80vh",
           animation: "spin 4s linear infinite",
         }}
       />

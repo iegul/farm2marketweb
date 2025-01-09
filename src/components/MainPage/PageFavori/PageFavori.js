@@ -3,13 +3,12 @@ import { Card, Row, Col, Button, Typography, message, Spin } from "antd";
 import { HeartFilled } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useUser } from "../../Context/UserContext"; // Kullanıcı bilgilerini almak için context kullanıyoruz
-
+import { useUser } from "../../Context/UserContext";
 const { Text, Paragraph } = Typography;
 
 const PageFavori = () => {
-  const { user } = useUser(); // Kullanıcı bilgilerini almak
-  const token = user?.token; // Token'ı user context'ten alıyoruz
+  const { user } = useUser();
+  const token = user?.token;
 
   const navigate = useNavigate();
   const [favoriteItems, setFavoriteItems] = useState([]);
@@ -155,7 +154,7 @@ const PageFavori = () => {
                     onClick={() => handleRemoveFavorite(item.id)}
                   />
                 }
-                bodyStyle={{ textAlign: "left" }} // Kart içeriği sola yaslı
+                bodyStyle={{ textAlign: "left" }}
               >
                 <Row gutter={[16, 16]}>
                   {[item.image1, item.image2, item.image3]

@@ -18,12 +18,6 @@ function ConfirmMailPage() {
       return;
     }
 
-    // if (!token) {
-    //   message.error("Oturum süreniz dolmuş. Lütfen tekrar giriş yapınız.");
-    //   navigate("/login");
-    //   return;
-    // }
-
     setIsLoading(true);
 
     try {

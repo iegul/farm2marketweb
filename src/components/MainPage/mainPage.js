@@ -24,11 +24,11 @@ function MainPage() {
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [userDrawerVisible, setUserDrawerVisible] = useState(false);
   const [urunEkleVisible, setUrunEkleVisible] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null); // Seçilen kategori
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [products, setProducts] = useState([]); // Ürünlerin state'i
-  const [error, setError] = useState(null); // Hatalar için state
+  const [products, setProducts] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -53,7 +53,6 @@ function MainPage() {
         "https://farmtwomarket.com/api/Product/GetProducts"
       );
       if (response.status === 200) {
-        // Eğer bir kategori seçildiyse ürünleri ön tarafta filtrele
         const filteredProducts = selectedCategory
           ? response.data.filter(
               (product) => product.categoryId === selectedCategory
@@ -79,9 +78,8 @@ function MainPage() {
   const showUrunEkle = () => setUrunEkleVisible(true);
   const onUrunEkleClose = () => setUrunEkleVisible(false);
 
-  // Kategori seçildiğinde yönlendirme işlemi
   const handleCategorySelect = (categoryId) => {
-    navigate(`/product/${categoryId}`); // Kategori ID'si ile yönlendirme yap
+    navigate(`/product/${categoryId}`);
   };
 
   return (

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Table, message, Spin } from "antd";
 import axios from "axios";
-import { useUser } from "../../Context/UserContext"; // Token'in UserContext'ten geldiğini varsayıyoruz.
+import { useUser } from "../../Context/UserContext";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useUser(); // Kullanıcının giriş yaparken aldığı token
-  const token = user?.token; // Token burada saklanıyor
+  const { user } = useUser();
+  const token = user?.token;
 
   useEffect(() => {
     const fetchUsers = async () => {

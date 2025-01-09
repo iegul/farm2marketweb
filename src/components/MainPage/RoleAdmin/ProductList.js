@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, message, Popconfirm } from "antd";
 import axios from "axios";
-import { useUser } from "../../Context/UserContext"; // Token bilgisi için
+import { useUser } from "../../Context/UserContext";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const { user } = useUser(); // Kullanıcıdan token alınır
+  const { user } = useUser();
   const token = user?.token;
 
-  // Ürünleri API'den çekme
   const fetchProducts = async () => {
     setLoading(true);
     try {
@@ -29,7 +28,6 @@ const ProductList = () => {
     fetchProducts();
   }, []);
 
-  // Ürün silme
   const deleteProduct = async (id) => {
     if (!token) {
       message.error("Lütfen giriş yapın.");
@@ -50,7 +48,7 @@ const ProductList = () => {
 
       if (response.status === 200) {
         message.success("Ürün başarıyla silindi!");
-        fetchProducts(); // Listeyi yenile
+        fetchProducts();
       } else {
         message.error("Ürün silinemedi.");
       }
@@ -64,7 +62,6 @@ const ProductList = () => {
     }
   };
 
-  // Tablo sütunları
   const columns = [
     {
       title: "Ürün ID",

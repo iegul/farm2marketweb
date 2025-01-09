@@ -35,7 +35,6 @@ function RegisterPage() {
     );
   };
 
-  //Çiftçi Form Submit
   const handleSubmit = async () => {
     if (!handleFarmerRegister()) {
       message.warning("Lütfen tüm alanları doldurun.");
@@ -66,7 +65,6 @@ function RegisterPage() {
     }
   };
 
-  //Market Form Submit
   const handleSubmit_2 = async () => {
     if (!handleMarketRegister()) {
       message.warning("Lütfen tüm alanları doldurun.");

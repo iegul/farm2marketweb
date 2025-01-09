@@ -31,10 +31,8 @@ function LoginPage() {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      // Gelen response'dan token'ı konsola yazdırıyoruz
       const { emailConfirmed, token, userName, userRole, confirmationNumber } =
         response.data.data;
-      //console.log(token); // Token'ı konsola yazdırın
 
       const userData = {
         email,

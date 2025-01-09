@@ -2,14 +2,14 @@ import React from "react";
 import { Card, Row, Col, Button, message } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useUser } from "../../Context/UserContext"; // Token bilgisi için
+import { useUser } from "../../Context/UserContext";
 
 const OrderSummary = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useUser(); // Kullanıcıdan token alınır
+  const { user } = useUser();
   const token = user?.token;
-  const order = location.state?.order; // Sipariş bilgilerini al
+  const order = location.state?.order;
 
   const handlePayment = async () => {
     if (!order) {

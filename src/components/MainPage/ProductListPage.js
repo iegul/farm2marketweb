@@ -15,28 +15,27 @@ const formatBase64 = (base64String) => {
 };
 
 function ProductListPage() {
-  const { id } = useParams(); // URL'deki kategori ID'sini al
-  const [products, setProducts] = useState([]); // Tüm ürünler
-  const [filteredProducts, setFilteredProducts] = useState([]); // Filtrelenmiş ürünler
+  const { id } = useParams();
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // API'den tüm ürünleri çek
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
         const response = await axios.get(
           "https://farmtwomarket.com/api/Product/GetProducts"
-        ); // Tüm ürünleri al
+        );
         if (response.status === 200) {
-          setProducts(response.data); // Tüm ürünleri kaydet
-          // İlk filtreleme işlemini yap
+          setProducts(response.data);
+
           const filtered = response.data.filter(
             (product) => product.categoryId.toString() === id
           );
-          setFilteredProducts(filtered); // Kategoriye göre filtrelenen ürünleri kaydet
+          setFilteredProducts(filtered);
         } else {
           setError("Ürünler alınırken bir hata oluştu.");
         }
@@ -49,15 +48,14 @@ function ProductListPage() {
     };
 
     fetchProducts();
-  }, [id]); // Kategori ID'si değiştiğinde API'yi tekrar çağır
+  }, [id]);
 
-  // Arama sorgusuna göre ürünleri filtrele
   const handleSearch = (query) => {
     setSearchQuery(query);
     const filtered = products
-      .filter((product) => product.categoryId.toString() === id) // Kategoriye göre filtrele
-      .filter(
-        (product) => product.name.toLowerCase().includes(query.toLowerCase()) // Arama sorgusuna göre filtrele
+      .filter((product) => product.categoryId.toString() === id)
+      .filter((product) =>
+        product.name.toLowerCase().includes(query.toLowerCase())
       );
     setFilteredProducts(filtered);
   };

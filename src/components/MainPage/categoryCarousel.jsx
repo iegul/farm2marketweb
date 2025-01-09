@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // useNavigate eklendi
+import { useNavigate } from "react-router-dom";
 import { Carousel, Row, Col, Button, Spin } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import "./CategoryCarousel.css";
@@ -9,14 +9,12 @@ function CategoryCarousel() {
   const carouselRef = useRef();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Navigasyon fonksiyonu
+  const navigate = useNavigate();
 
-  // Kategoriye tıklandığında yönlendirme işlemi
   const handleCategoryClick = (categoryId) => {
-    navigate(`/product/${categoryId}`); // Seçilen kategoriye göre yönlendirme
+    navigate(`/product/${categoryId}`);
   };
 
-  // Kategorileri API'den çek
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -33,17 +31,14 @@ function CategoryCarousel() {
     fetchCategories();
   }, []);
 
-  // Carousel'deki bir sonraki slayta geçiş
   const next = () => {
     carouselRef.current.next();
   };
 
-  // Carousel'deki bir önceki slayta geçiş
   const prev = () => {
     carouselRef.current.prev();
   };
 
-  // Kategorileri 3'erli gruplara bölen fonksiyon
   const chunkArray = (array, chunkSize) => {
     const chunks = [];
     for (let i = 0; i < array.length; i += chunkSize) {
@@ -52,7 +47,6 @@ function CategoryCarousel() {
     return chunks;
   };
 
-  // Yükleniyor durumu
   if (loading) {
     return (
       <div style={{ textAlign: "center", marginTop: "50px" }}>
@@ -86,7 +80,7 @@ function CategoryCarousel() {
                     <Button
                       type="link"
                       onClick={() => handleCategoryClick(category.id)}
-                      onMouseOver={(e) => (e.target.style.color = "white")} // Hover yazı beyaz
+                      onMouseOver={(e) => (e.target.style.color = "white")}
                       onMouseOut={(e) => (e.target.style.color = "#4caf50")}
                     >
                       {category.name}

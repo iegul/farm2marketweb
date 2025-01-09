@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 const PageSepet = () => {
   const { user } = useUser();
   const [cartItems, setCartItems] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0); // API'den gelen totalPrice
+  const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -32,8 +32,8 @@ const PageSepet = () => {
 
       const { cartItems, totalPrice } = response.data;
 
-      setCartItems(cartItems); // Ürünleri set et
-      setTotalPrice(totalPrice); // API'deki toplam tutarı set et
+      setCartItems(cartItems);
+      setTotalPrice(totalPrice);
     } catch (error) {
       console.error("API Error:", error.response?.data || error.message);
       message.error("Bir hata oluştu. Lütfen tekrar deneyin.");
@@ -61,8 +61,8 @@ const PageSepet = () => {
 
       if (response.status === 200) {
         message.success("Sipariş başarıyla oluşturuldu!");
-        const order = response.data; // Sipariş detayları
-        navigate("/orderSummary", { state: { order } }); // Sipariş Özeti sayfasına yönlendirme
+        const order = response.data;
+        navigate("/orderSummary", { state: { order } });
       }
     } catch (error) {
       console.error(
