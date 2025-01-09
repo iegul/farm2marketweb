@@ -23,6 +23,7 @@ const formatBase64 = (base64String) => {
   }
   return base64String;
 };
+
 function ProductGrid({ selectedCategory }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [products, setProducts] = useState([]);
@@ -226,8 +227,8 @@ function ProductGrid({ selectedCategory }) {
                 )}
               </div>
 
-              <p style={{ margin: 0, fontSize: "14px", color: "#4CAF50" }}>
-                {item.price.toFixed(2)}₺
+              <p style={{ margin: 0, fontSize: "14px", color: "#333" }}>
+                {item.price} ₺
               </p>
               <p style={{ margin: 0, fontSize: "14px", color: "#333" }}>
                 {item.weightOrAmount && item.unitType

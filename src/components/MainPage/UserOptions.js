@@ -150,7 +150,11 @@ const UserOptions = ({ user, setUser }) => {
       dataSource={userOptions}
       renderItem={({ label, action, icon }) => (
         <List.Item>
-          <Button type="link" style={{ padding: 0 }} onClick={action}>
+          <Button
+            type="link"
+            style={{ padding: 0, color: "green" }} // Renk burada yeşil olarak ayarlandı
+            onClick={action}
+          >
             {icon}
             <span style={{ marginLeft: 8 }}>{label}</span>
           </Button>
@@ -170,7 +174,11 @@ const UserOptions = ({ user, setUser }) => {
               ]}
               renderItem={({ label, action }) => (
                 <List.Item>
-                  <Button type="link" style={{ padding: 0 }} onClick={action}>
+                  <Button
+                    type="link"
+                    style={{ padding: 0, color: "#3D692A" }} // Alt seçeneklerin rengi de yeşil yapıldı
+                    onClick={action}
+                  >
                     <span style={{ marginLeft: 8 }}>{label}</span>
                   </Button>
                 </List.Item>

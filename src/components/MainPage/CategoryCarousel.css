@@ -8,6 +8,13 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
+  background-color: #ddd; /* Gri arka plan */
+  border: none;
+  color: #4caf50; /* Yeşil yazı */
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 .carousel-arrow-left {
@@ -26,7 +33,32 @@
   border: 1px solid #ddd;
   padding: 20px;
   border-radius: 8px;
-  background-color: #f9f9f9;
+  background-color: #f9f9f9; /* Gri arka plan */
+  color: #4caf50; /* Yazı rengi yeşil */
   text-align: center;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-card:hover {
+  background-color: #4caf50; /* Arka plan yeşil */
+  color: white; /* Yazı beyaz */
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3); /* Daha derin gölge */
+  transform: scale(1.05); /* Hafif büyüme */
+}
+
+.carousel-card button {
+  font-size: 16px;
+  font-weight: bold;
+  color: #4caf50; /* Yazı rengi yeşil */
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.carousel-card button:hover {
+  color: white; /* Yazı beyaz */
+  transform: scale(1.1); /* Hafif büyüme */
 }

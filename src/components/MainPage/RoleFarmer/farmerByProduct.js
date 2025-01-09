@@ -4,7 +4,7 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useUser } from "../../Context/UserContext";
-import UpdateProductModal from "./UpdateProductModal"; // Yeni modal bileşeni
+import UpdateProductModal from "./UpdateProductModal";
 
 const { Text } = Typography;
 
@@ -16,44 +16,44 @@ const FarmerByProduct = () => {
   const [updatingProduct, setUpdatingProduct] = useState(null);
   const [updateFields, setUpdateFields] = useState({});
 
-  useEffect(() => {
-    const fetchFarmerProducts = async () => {
-      try {
-        const token = user.token;
+  // Ürünleri getiren yardımcı fonksiyon
+  const fetchFarmerProducts = async () => {
+    try {
+      const token = user.token;
 
-        if (!token) {
-          message.error("Token bulunamadı. Lütfen giriş yapın.");
-          navigate("/login");
-          return;
-        }
-
-        const response = await axios.get(
-          "https://farmtwomarket.com/api/Product/GetProductsByFarmer",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setProducts(response.data);
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          message.error(
-            "Oturumunuzun süresi dolmuş. Lütfen tekrar giriş yapın."
-          );
-          navigate("/login");
-        } else {
-          message.error(
-            "Ürünler yüklenirken bir hata oluştu. Lütfen tekrar deneyin."
-          );
-        }
-      } finally {
-        setLoading(false);
+      if (!token) {
+        message.error("Token bulunamadı. Lütfen giriş yapın.");
+        navigate("/login");
+        return;
       }
-    };
 
+      const response = await axios.get(
+        "https://farmtwomarket.com/api/Product/GetProductsByFarmer",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setProducts(response.data);
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        message.error("Oturumunuzun süresi dolmuş. Lütfen tekrar giriş yapın.");
+        navigate("/login");
+      } else {
+        message.error(
+          "Ürünler yüklenirken bir hata oluştu. Lütfen tekrar deneyin."
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Bileşen yüklendiğinde ürünleri getir
+  useEffect(() => {
     fetchFarmerProducts();
-  }, [user.token, navigate]);
+  }, []);
 
   const handleUpdate = async () => {
     try {
@@ -75,14 +75,14 @@ const FarmerByProduct = () => {
         }
       );
 
-      setProducts((prevProducts) =>
-        prevProducts.map((product) =>
-          product.id === updatingProduct.id ? response.data : product
-        )
-      );
+      if (response.status === 200) {
+        message.success("Ürün başarıyla güncellendi!");
 
-      message.success("Ürün başarıyla güncellendi.");
-      setUpdatingProduct(null); // Güncelleme modali kapat
+        // Ürünleri güncelle
+        await fetchFarmerProducts();
+
+        setUpdatingProduct(null); // Güncelleme modali kapat
+      }
     } catch (error) {
       console.error("API Response Error:", error.response);
       message.error("Ürün güncellenirken bir hata oluştu.");
@@ -151,8 +151,8 @@ const FarmerByProduct = () => {
                   bodyStyle={{
                     textAlign: "left",
                     display: "flex",
-                    flexDirection: "column", // Stack the card content vertically
-                    alignItems: "flex-start", // Align the content to the left
+                    flexDirection: "column",
+                    alignItems: "flex-start",
                   }}
                 >
                   {product.image1 || product.image2 || product.image3 ? (
@@ -160,8 +160,8 @@ const FarmerByProduct = () => {
                       style={{
                         display: "flex",
                         gap: "10px",
-                        marginBottom: "10px", // Add spacing below the images
-                        justifyContent: "flex-start", // Align images to the left
+                        marginBottom: "10px",
+                        justifyContent: "flex-start",
                       }}
                     >
                       {[product.image1, product.image2, product.image3].map(
@@ -186,8 +186,8 @@ const FarmerByProduct = () => {
                   <div
                     style={{
                       display: "flex",
-                      flexDirection: "column", // Stack text and buttons vertically
-                      alignItems: "flex-start", // Align text and buttons to the left
+                      flexDirection: "column",
+                      alignItems: "flex-start",
                     }}
                   >
                     <Text strong>{product.name}</Text>
@@ -196,7 +196,7 @@ const FarmerByProduct = () => {
                       style={{
                         display: "flex",
                         gap: "8px",
-                        justifyContent: "flex-end", // Align buttons to the right
+                        justifyContent: "flex-end",
                       }}
                     >
                       <Button
@@ -204,7 +204,7 @@ const FarmerByProduct = () => {
                         icon={<EditOutlined />}
                         onClick={() => openUpdateModal(product)}
                         style={{
-                          backgroundColor: "#4CAF50", // Green
+                          backgroundColor: "#4CAF50",
                           color: "white",
                         }}
                       >
@@ -215,7 +215,7 @@ const FarmerByProduct = () => {
                         icon={<DeleteOutlined />}
                         onClick={() => handleDelete(product.id)}
                         style={{
-                          backgroundColor: "#f44336", // Red
+                          backgroundColor: "#f44336",
                           color: "white",
                         }}
                       >

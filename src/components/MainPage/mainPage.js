@@ -45,6 +45,7 @@ function MainPage() {
     };
     fetchCategories();
   }, []);
+
   const fetchProducts = async () => {
     try {
       setLoading(true);
@@ -77,8 +78,10 @@ function MainPage() {
   const onUserDrawerClose = () => setUserDrawerVisible(false);
   const showUrunEkle = () => setUrunEkleVisible(true);
   const onUrunEkleClose = () => setUrunEkleVisible(false);
+
+  // Kategori seçildiğinde yönlendirme işlemi
   const handleCategorySelect = (categoryId) => {
-    setSelectedCategory(categoryId); // Seçilen kategoriyi güncelle
+    navigate(`/product/${categoryId}`); // Kategori ID'si ile yönlendirme yap
   };
 
   return (
@@ -133,7 +136,7 @@ function MainPage() {
               <List.Item>
                 <Button
                   type="link"
-                  style={{ padding: 0 }}
+                  style={{ padding: 0, color: "#4caf50" }}
                   onClick={() => handleCategorySelect(item.id)}
                 >
                   {item.name}

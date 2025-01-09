@@ -16,37 +16,36 @@ const PageFavori = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Token yoksa login sayfasına yönlendiriyoruz
     if (!token) {
       return;
     }
 
     const fetchFavorites = async () => {
       try {
-        setLoading(true); // Yükleniyor durumu başlatılıyor
+        setLoading(true);
         const response = await axios.get(
-          "https://farmtwomarket.com/api/Favorite/favorites", // API URL
+          "https://farmtwomarket.com/api/Favorite/favorites",
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Token gönderimi
+              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           }
         );
 
         if (response.status === 200) {
-          setFavoriteItems(response.data); // Favori ürünleri state'e set et
+          setFavoriteItems(response.data);
         } else {
           message.error("Favori ürünler yüklenirken bir hata oluştu.");
         }
       } catch (error) {
-        setLoading(false); // Yükleme bitiyor
+        setLoading(false);
         if (error.response) {
           if (error.response.status === 401) {
             message.error(
               "Token geçersiz veya süresi dolmuş. Lütfen tekrar giriş yapın."
             );
-            navigate("/login"); // Kullanıcıyı login sayfasına yönlendir
+            navigate("/login");
           } else {
             message.error("Favoriler alınamadı. Lütfen tekrar deneyin.");
           }
@@ -54,14 +53,13 @@ const PageFavori = () => {
           message.error("Favoriler alınamadı. Lütfen tekrar deneyin.");
         }
       } finally {
-        setLoading(false); // Yükleme tamamlandı
+        setLoading(false);
       }
     };
 
     fetchFavorites();
-  }, [token]); // Token değiştiğinde tekrar çalıştırılır
+  }, [token]);
 
-  // Favori ürünleri silmek için fonksiyon
   const handleRemoveFavorite = async (productId) => {
     if (!token) {
       message.error("Lütfen giriş yapın.");
@@ -71,10 +69,10 @@ const PageFavori = () => {
     setLoading(true);
     try {
       const response = await axios.delete(
-        `https://farmtwomarket.com/api/Favorite/remove?productId=${productId}`, // DELETE isteği
+        `https://farmtwomarket.com/api/Favorite/remove?productId=${productId}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Token gönderimi
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
@@ -82,7 +80,7 @@ const PageFavori = () => {
 
       if (response.status === 200) {
         message.success("Ürün favorilerden silindi.");
-        setFavoriteItems(favoriteItems.filter((item) => item.id !== productId)); // Favorilerden silinen öğeyi state'den çıkar
+        setFavoriteItems(favoriteItems.filter((item) => item.id !== productId));
       } else {
         message.error("Favoriden silme işlemi başarısız oldu.");
       }
@@ -94,7 +92,6 @@ const PageFavori = () => {
     }
   };
 
-  // Eğer token yoksa, login yapılması için kullanıcıyı yönlendiriyoruz
   if (!token) {
     return (
       <div
@@ -147,7 +144,7 @@ const PageFavori = () => {
           <Spin size="large" /> Favoriler yükleniyor...
         </div>
       ) : favoriteItems.length > 0 ? (
-        <Row gutter={[16, 16]} justify="center" style={{ marginTop: "16px" }}>
+        <Row gutter={[16, 16]} style={{ marginTop: "16px" }}>
           {favoriteItems.map((item) => (
             <Col span={24} key={item.id}>
               <Card
@@ -155,10 +152,10 @@ const PageFavori = () => {
                 extra={
                   <HeartFilled
                     style={{ color: "red", fontSize: "20px" }}
-                    onClick={() => handleRemoveFavorite(item.id)} // Favoriden silme işlemi
+                    onClick={() => handleRemoveFavorite(item.id)}
                   />
                 }
-                bodyStyle={{ textAlign: "center" }}
+                bodyStyle={{ textAlign: "left" }} // Kart içeriği sola yaslı
               >
                 <Row gutter={[16, 16]}>
                   {[item.image1, item.image2, item.image3]
@@ -178,26 +175,34 @@ const PageFavori = () => {
                     ))}
                 </Row>
                 <div>
-                  <Text strong>{item.name}</Text>
+                  <Text strong style={{ textAlign: "left" }}>
+                    {item.name}
+                  </Text>
                 </div>
                 <div>
-                  <Paragraph style={{ margin: 0 }}>
+                  <Paragraph style={{ margin: 0, textAlign: "left" }}>
                     {item.description || "Açıklama bulunamadı."}
                   </Paragraph>
                 </div>
                 <div>
-                  <Text style={{ color: "#1890ff" }}>
+                  <Text style={{ color: "#1890ff", textAlign: "left" }}>
                     {item.weightOrAmount} {item.unitType}
                   </Text>
                 </div>
                 <div>
-                  <Text strong>{item.price} ₺</Text>
+                  <Text strong style={{ textAlign: "left" }}>
+                    {item.price} ₺
+                  </Text>
                 </div>
                 <div>
-                  <Text type="secondary">{item.address}</Text>
+                  <Text type="secondary" style={{ textAlign: "left" }}>
+                    {item.address}
+                  </Text>
                 </div>
                 <div style={{ marginTop: "8px" }}>
-                  <Text type="success">Kalite: {item.quality}</Text>
+                  <Text type="success" style={{ textAlign: "left" }}>
+                    Kalite: {item.quality}
+                  </Text>
                 </div>
               </Card>
             </Col>

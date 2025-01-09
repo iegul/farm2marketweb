@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Input, InputNumber, Select, Upload, Button } from "antd";
+import {
+  Modal,
+  Input,
+  InputNumber,
+  Select,
+  Upload,
+  Button,
+  message,
+} from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 
@@ -44,63 +52,45 @@ const UpdateProductModal = ({
   // Handle removing images
   const handleImageRemove = async (index) => {
     const imageFields = ["image1", "image2", "image3"];
-
     if (index < imageFields.length) {
       const fieldToClear = imageFields[index];
 
-      // Clear the image field in the frontend
-      const updatedFields = {
-        ...updateFields,
-        [fieldToClear]: "", // Clear the specific field
-      };
-      setUpdateFields(updatedFields); // Update state with cleared field
-
       try {
-        // Send the updated data (with cleared image) to the backend
-        const response = await axios.put(
-          `https://farmtwomarket.com/api/Product/UpdateProduct?id=${updatedFields.id}`,
-          updatedFields
-        );
-        if (response.status === 200) {
-          console.log("Image removed and updated successfully!");
-        } else {
-          console.error("Unexpected response from the API:", response);
-        }
+        // Set the image field to a single space " " (to comply with API requirements)
+        setUpdateFields((prevFields) => ({
+          ...prevFields,
+          [fieldToClear]: " ", // Assign a single space instead of empty string
+        }));
+        message.success(`Resim ${index + 1} kaldırıldı.`);
       } catch (error) {
+        message.error("Resim kaldırılırken bir hata oluştu.");
         console.error("Error removing image:", error);
       }
     }
   };
 
   // Handle image upload
-  const handleImageUpload = (file, fieldName) => {
+  const handleImageUpload = (file) => {
     const reader = new FileReader();
     reader.onloadend = () => {
-      setUpdateFields((prevFields) => ({
-        ...prevFields,
-        [fieldName]: reader.result.split(",")[1], // Convert image to base64 and get the string part
-      }));
+      const base64Image = reader.result.split(",")[1];
+      const imageFields = ["image1", "image2", "image3"];
+
+      // Find the first empty image slot
+      for (let i = 0; i < imageFields.length; i++) {
+        if (!updateFields[imageFields[i]]) {
+          setUpdateFields((prevFields) => ({
+            ...prevFields,
+            [imageFields[i]]: base64Image,
+          }));
+          return; // Exit loop after updating
+        }
+      }
+
+      message.error("Maksimum 3 resim eklenebilir.");
     };
     reader.readAsDataURL(file);
     return false; // Prevent default upload behavior
-  };
-
-  // Handle save
-  const handleSave = async () => {
-    try {
-      const response = await axios.put(
-        `https://farmtwomarket.com/api/Product/UpdateProduct?id=${updateFields.id}`,
-        updateFields // Send updated data
-      );
-      if (response.status === 200) {
-        console.log("Product updated successfully!");
-        onOk(); // Close the modal
-      } else {
-        console.error("Unexpected response from the API:", response);
-      }
-    } catch (error) {
-      console.error("Error updating product:", error);
-    }
   };
 
   // Render images
@@ -109,9 +99,11 @@ const UpdateProductModal = ({
       updateFields.image1,
       updateFields.image2,
       updateFields.image3,
-    ].filter((img) => img); // Filter out empty images
+    ];
 
     return productImages.map((base64Image, index) => {
+      if (!base64Image) return null; // Skip empty images
+
       const imageUrl = `data:image/jpeg;base64,${base64Image}`;
       return (
         <div key={index} style={{ position: "relative", margin: "5px" }}>
@@ -140,6 +132,29 @@ const UpdateProductModal = ({
         </div>
       );
     });
+  };
+
+  const handleSave = async () => {
+    if (!updateFields.name || !updateFields.categoryId || !updateFields.price) {
+      message.error("Lütfen zorunlu alanları doldurun.");
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        `https://farmtwomarket.com/api/Product/UpdateProduct?id=${updateFields.id}`,
+        updateFields
+      );
+      if (response.status === 200) {
+        message.success("Ürün başarıyla güncellendi!");
+        onOk(); // Close the modal
+      } else {
+        message.error("Ürün güncellenirken bir hata oluştu.");
+      }
+    } catch (error) {
+      console.error("Error updating product:", error);
+      message.error("Ürün güncellenirken bir hata oluştu.");
+    }
   };
 
   return (

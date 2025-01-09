@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { Form, Input, Button, Typography, message } from "antd";
 import axios from "axios";
 import { useUser } from "../../Context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
 
 const ChangePassword = () => {
   const { user } = useUser(); // Kullanıcı bilgisini almak için context
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const onFinish = async (values) => {
     setLoading(true);
@@ -27,6 +29,7 @@ const ChangePassword = () => {
 
       if (response.status === 200) {
         message.success("Şifre başarıyla değiştirildi.");
+        navigate("/mainPage");
       } else {
         message.error("Şifre değiştirilemedi. Lütfen tekrar deneyiniz.");
       }
@@ -40,8 +43,17 @@ const ChangePassword = () => {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: "50px auto", padding: "20px" }}>
-      <Title level={3} style={{ textAlign: "center" }}>
+    <div
+      style={{
+        maxWidth: 400,
+        margin: "50px auto",
+        padding: "30px",
+        borderRadius: "8px",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        backgroundColor: "#fff",
+      }}
+    >
+      <Title level={3} style={{ textAlign: "center", color: "#4caf50" }}>
         Şifre Değiştir
       </Title>
       <Form
@@ -49,6 +61,7 @@ const ChangePassword = () => {
         layout="vertical"
         onFinish={onFinish}
         autoComplete="off"
+        colon={false} // * işaretlerini kaldırır
       >
         <Form.Item
           label="Mevcut Şifre"
@@ -79,7 +92,17 @@ const ChangePassword = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" block loading={loading}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            block
+            loading={loading}
+            style={{
+              backgroundColor: "#4caf50",
+              borderColor: "#4caf50",
+              fontWeight: "bold",
+            }}
+          >
             Şifre Değiştir
           </Button>
         </Form.Item>

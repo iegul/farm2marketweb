@@ -90,8 +90,10 @@ const BuyProduct = () => {
                       key={index}
                       style={{ marginTop: "8px", paddingLeft: "16px" }}
                     >
-                      <Text>{item.productName}</Text> - {item.quantity} adet -{" "}
-                      {item.price}₺
+                      <Text>
+                        <strong>{item.productName}</strong>
+                      </Text>{" "}
+                      - {item.quantity} adet - {item.price}₺
                     </div>
                   ))}
                 </div>

@@ -21,6 +21,7 @@ import ChangePassword from "../components/MainPage/Drawer/ChangePassword";
 import AddCategory from "../components/MainPage/RoleAdmin/AddCategory";
 import ProductList from "../components/MainPage/RoleAdmin/ProductList";
 import UserList from "../components/MainPage/RoleAdmin/UserList";
+import ProductListPage from "../components/MainPage/ProductListPage";
 
 function AppRouter() {
   return (
@@ -47,6 +48,7 @@ function AppRouter() {
       <Route path="/addcatagory" element={<AddCategory />} />
       <Route path="/productList" element={<ProductList />} />
       <Route path="/userList" element={<UserList />} />
+      <Route path="/product/:id" element={<ProductListPage />} />
     </Routes>
   );
 }

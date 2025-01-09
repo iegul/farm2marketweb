@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, message, Typography } from "antd";
+import { Form, Input, Button, message, Typography, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../Context/UserContext";
 import axios from "axios";
@@ -81,7 +81,8 @@ const AccountPage = () => {
 
         if (response.status === 200) {
           message.success("Profil başarıyla güncellendi.");
-          setUser({ ...user, ...updatedData }); // Kullanıcı bilgisini güncelle
+          setUser({ ...user, ...updatedData });
+          navigate("/mainPage");
         } else {
           message.error("Profil güncellenemedi. Lütfen tekrar deneyiniz.");
         }
@@ -96,12 +97,26 @@ const AccountPage = () => {
   };
 
   if (!profileData) {
-    return <div>Yükleniyor...</div>;
+    return (
+      <div style={{ textAlign: "center", marginTop: "50px" }}>
+        <Spin size="large" />
+        <p>Profil bilgileri yükleniyor...</p>
+      </div>
+    );
   }
 
   return (
-    <div style={{ maxWidth: 600, margin: "50px auto", padding: "20px" }}>
-      <Title level={3} style={{ textAlign: "center" }}>
+    <div
+      style={{
+        maxWidth: 600,
+        margin: "50px auto",
+        padding: "20px",
+        borderRadius: "8px",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        backgroundColor: "#fff",
+      }}
+    >
+      <Title level={3} style={{ textAlign: "center", color: "#4caf50" }}>
         Hesap Bilgilerini Güncelle
       </Title>
       <Form
@@ -119,6 +134,7 @@ const AccountPage = () => {
           }),
         }}
         onFinish={onFinish}
+        colon={false} // Yıldızları kaldırmak için
       >
         <Form.Item
           label="Ad"
@@ -179,7 +195,17 @@ const AccountPage = () => {
         )}
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" block loading={loading}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            block
+            loading={loading}
+            style={{
+              backgroundColor: "#4caf50",
+              borderColor: "#4caf50",
+              fontWeight: "bold",
+            }}
+          >
             Güncelle
           </Button>
         </Form.Item>

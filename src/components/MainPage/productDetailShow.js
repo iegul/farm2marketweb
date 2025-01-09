@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button, Col, Row, Carousel, InputNumber, message } from "antd";
-import { HeartOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import {
+  HeartOutlined,
+  HeartFilled,
+  ArrowLeftOutlined,
+} from "@ant-design/icons";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import FooterComponent from "./footercomponent";
@@ -23,6 +27,7 @@ function ProductDetailShow() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1); // Default quantity
+  const [isFavorite, setIsFavorite] = useState(false); // Favori durumu
 
   const { user } = useUser();
   const token = user?.token;
@@ -43,6 +48,20 @@ function ProductDetailShow() {
 
           if (productDetail) {
             setProduct(productDetail);
+
+            // Ürünün favori olup olmadığını kontrol et
+            const favoriteResponse = await axios.get(
+              "https://farmtwomarket.com/api/Favorite/favorites",
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+            const isFavorited = favoriteResponse.data.some(
+              (favItem) => favItem.id === parseInt(id)
+            );
+            setIsFavorite(isFavorited);
           } else {
             setError("Ürün bulunamadı.");
           }
@@ -58,28 +77,23 @@ function ProductDetailShow() {
     };
 
     fetchProductDetail();
-  }, [id]);
+  }, [id, token]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
   const handleAddToCart = async () => {
     try {
-      // Token kontrolü
       if (!token) {
         message.error("Sepete ürün eklemek için giriş yapmalısınız.");
-        return; // Token yoksa işlemi durdur
+        return;
       }
 
-      // Payload verisini oluşturuyoruz
       const payload = {
         productId: product.id,
         weightOrAmount: quantity,
       };
 
-      console.log("Gönderilen payload:", payload);
-
-      // API'ye POST isteği gönderiyoruz
       const response = await axios.post(
         "https://farmtwomarket.com/api/Cart/AddToCart",
         payload,
@@ -91,13 +105,10 @@ function ProductDetailShow() {
         }
       );
 
-      // Başarılı işlem sonrası
       if (response.status === 200) {
-        console.log("Ürün başarıyla sepete eklendi:", response.data);
         message.success("Ürün sepete başarıyla eklendi!");
-        navigate("/page-sepet"); // Sepet sayfasına yönlendirme
+        navigate("/page-sepet");
       } else {
-        console.error("Sepete eklerken bir hata oluştu:", response.status);
         message.error("Sepete eklerken bir hata oluştu.");
       }
     } catch (error) {
@@ -106,38 +117,57 @@ function ProductDetailShow() {
     }
   };
 
-  const handleAddToFavorites = async () => {
+  const handleToggleFavorite = async () => {
     try {
       if (!token) {
         message.error("Favorilere eklemek için giriş yapmalısınız.");
         return;
       }
 
-      console.log("Adding to favorites:", product.id);
-      const response = await axios.post(
-        `https://farmtwomarket.com/api/Favorite/Add?productId=${product.id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      if (isFavorite) {
+        // Favoriden kaldır
+        const response = await axios.delete(
+          `https://farmtwomarket.com/api/Favorite/remove?productId=${product.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          message.success("Ürün favorilerden kaldırıldı.");
+          setIsFavorite(false);
+        } else {
+          message.error("Favoriden kaldırma işlemi başarısız oldu.");
         }
-      );
-
-      console.log("Response:", response.data);
-
-      if (response.status === 200) {
-        message.success("Ürün favorilere başarıyla eklendi!");
       } else {
-        message.error("Favorilere ekleme başarısız oldu.");
+        // Favorilere ekle
+        const response = await axios.post(
+          `https://farmtwomarket.com/api/Favorite/Add?productId=${product.id}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          message.success("Ürün favorilere başarıyla eklendi!");
+          setIsFavorite(true);
+        } else {
+          message.error("Favorilere ekleme başarısız oldu.");
+        }
       }
     } catch (error) {
       console.error(
-        "Error while adding to favorites:",
+        "Error while toggling favorite:",
         error.response?.data || error.message
       );
       message.error(
-        error.response?.data?.message || "Favorilere eklerken bir hata oluştu."
+        error.response?.data?.message ||
+          "Favori durumu değiştirilirken bir hata oluştu."
       );
     }
   };
@@ -178,18 +208,18 @@ function ProductDetailShow() {
                 {/* Favorilere Ekle Butonu */}
                 {user?.userRole === "MarketReceiver" && (
                   <Button
-                    icon={<HeartOutlined />}
+                    icon={isFavorite ? <HeartFilled /> : <HeartOutlined />}
                     shape="circle"
                     style={{
                       position: "absolute",
                       top: "10px",
                       right: "10px",
-                      backgroundColor: "#f5222d",
-                      color: "#fff",
+                      backgroundColor: isFavorite ? "#f5222d" : "#fff",
+                      color: isFavorite ? "#fff" : "#f5222d",
                       border: "none",
                       zIndex: 1,
                     }}
-                    onClick={handleAddToFavorites}
+                    onClick={handleToggleFavorite}
                   />
                 )}
 
@@ -213,7 +243,7 @@ function ProductDetailShow() {
                       <Col span={12}>
                         <InputNumber
                           min={1}
-                          max={product.stockAmount} // Ürün stok miktarına göre max değeri ayarlıyoruz
+                          max={product.stockAmount}
                           value={quantity}
                           onChange={(value) => setQuantity(value)}
                           style={{ width: "100%" }}
